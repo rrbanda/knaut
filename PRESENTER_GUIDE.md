@@ -239,6 +239,57 @@ The worst case for an auto-approved action is that a low-risk operation (like re
 
 ---
 
+## New Slides: What You Need to Know
+
+### Slide 4: Kubernaut Agent Deep-Dive (the "wow" slide)
+
+This is the most technically impressive slide. The key concept: Kubernaut's AI is an **autonomous agent**, not just "calling ChatGPT."
+
+**What "agentic" means (explain it like this):**
+- A regular AI chatbot answers questions you ask it
+- An AI agent DECIDES what questions to ask, then goes and finds the answers itself
+- Kubernaut's agent is like an SRE that thinks out loud: "OOMKilled? Let me check logs. Memory spiking? Was there a deploy? Yes, 30 min ago. That's the cause."
+- It makes 3-8 tool calls per investigation, each one a deliberate decision
+
+**The ReAct loop (Reason-Act-Observe):**
+1. Agent REASONS: "Given this OOMKilled alert, I should check pod logs"
+2. Agent ACTS: calls the kubectl tool to get logs
+3. Agent OBSERVES: reads the result, identifies memory spike at startup
+4. Agent REASONS again: "Memory spike at startup -- was there a recent deploy?"
+5. Repeat until confident enough to submit a recommendation
+
+**Shadow Agent (the safety differentiator):**
+- A completely separate AI watches every step of the investigation
+- It's looking for: prompt injection, suspicious tool calls, anomalous reasoning
+- If it detects something wrong, it kills the entire investigation immediately
+- This is "fail-closed" -- errors are treated as suspicious (safe default)
+
+**The line to memorize:** "This is an AGENT, not a prompt. It has agency -- it decides what to investigate, how deep to go, and when it has enough confidence to recommend action."
+
+### Slide 6: Day in the Life (the "make it real" slide)
+
+Three panels showing what operators actually see. Walk through left to right:
+
+**Left - Slack notification:**
+- This arrives in your team's channel (or DM to on-call)
+- Shows: what's wrong, what the AI found, what it wants to do, confidence score
+- One-click Approve or Reject buttons
+- Key point: "No investigation needed -- the AI already did it"
+
+**Middle - Terminal (oc get rr --watch):**
+- For operators who prefer the CLI
+- Phases tick through in real-time: Pending -> Processing -> Analyzing -> Executing -> Verified
+- "62 seconds end-to-end" -- that's the number to emphasize
+
+**Right - Metrics graph:**
+- Memory climbing (the leak), then blue dashed line (rollback executes), then drops to stable
+- Visual proof it worked
+- "The Effectiveness Monitor sees this and confirms: problem resolved"
+
+**The punchline:** "62 seconds from alert to verified fix. One Slack button click. Full audit trail. Compare that to the 47-minute manual workflow on slide 1."
+
+---
+
 ## Presentation Tips
 
 ### Opening (first 60 seconds)

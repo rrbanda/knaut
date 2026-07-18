@@ -14,15 +14,18 @@ This repository contains a presentation deck introducing **Kubernaut** -- an AI-
 - **Full Screen:** Press `F` for full-screen presentation mode
 - **Overview:** Press `O` (or `Esc`) for slide overview
 
-## Presentation Structure
+## Presentation Structure (7 slides + title)
 
 | Slide | Topic | Duration |
 |-------|-------|----------|
-| 1 | The Problem: OpenShift Ops Today | ~6 min |
-| 2 | Introducing Kubernaut | ~6 min |
-| 3 | How It Works on OpenShift | ~6 min |
-| 4 | Safety, Compliance, and Control | ~6 min |
-| 5 | What This Means for Us -- Next Steps | ~6 min |
+| 0 | Title | 30 sec |
+| 1 | The Problem: OpenShift Ops at Scale | ~4 min |
+| 2 | Platform Architecture (SVG diagram) | ~5 min |
+| 3 | Operator Internals: CRD State Machine | ~4 min |
+| 4 | Kubernaut Agent: Agentic Investigation Engine | ~5 min |
+| 5 | Safety, Compliance, and Control | ~4 min |
+| 6 | Day in the Life: What Operators See | ~3 min |
+| 7 | Impact and Next Steps | ~3 min + Q&A |
 
 **Total time:** ~30 minutes including Q&A
 

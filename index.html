@@ -6,68 +6,89 @@
     <title>Kubernaut for OpenShift Ops</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
     <style>
         :root {
-            --citi-navy: #003B70;
-            --citi-sky: #00BDF2;
-            --citi-dark: #001F3F;
-            --citi-light: #E8F4FD;
-            --citi-gray: #4A5568;
-            --citi-white: #FFFFFF;
-            --citi-green: #10B981;
-            --citi-orange: #F59E0B;
+            --navy: #003B70;
+            --sky: #00BDF2;
+            --dark: #001F3F;
+            --light: #E8F4FD;
+            --gray: #4A5568;
+            --green: #10B981;
+            --orange: #F59E0B;
+            --red: #EF4444;
         }
         .reveal { font-family: Arial, Helvetica, sans-serif; }
-        .reveal h1, .reveal h2, .reveal h3 { color: var(--citi-navy); font-weight: 700; text-transform: none; letter-spacing: -0.02em; }
-        .reveal h2 { font-size: 1.4em; margin-bottom: 0.2em; }
-        .reveal h3 { font-size: 0.9em; color: var(--citi-sky); margin-top: 0; }
-        .reveal p, .reveal li, .reveal td { color: var(--citi-gray); font-size: 0.58em; line-height: 1.5; }
-        .reveal section { padding: 20px 30px; }
-        .reveal .slide-number { color: var(--citi-navy); font-size: 10px; }
-        .reveal code { font-size: 0.85em; background: var(--citi-light); padding: 1px 5px; border-radius: 3px; color: var(--citi-navy); }
-        .top-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--citi-navy), var(--citi-sky)); }
-        .reveal .controls { color: var(--citi-sky); }
-        .reveal .progress { color: var(--citi-sky); height: 3px; }
+        .reveal h1, .reveal h2, .reveal h3 { color: var(--navy); font-weight: 700; text-transform: none; letter-spacing: -0.02em; }
+        .reveal h2 { font-size: 1.3em; margin-bottom: 0.15em; }
+        .reveal h3 { font-size: 0.82em; color: var(--sky); margin-top: 0; }
+        .reveal p, .reveal li, .reveal td { color: var(--gray); font-size: 0.54em; line-height: 1.45; }
+        .reveal section { padding: 15px 25px; }
+        .reveal .slide-number { color: var(--navy); font-size: 10px; }
+        .reveal code { font-size: 0.82em; background: var(--light); padding: 1px 4px; border-radius: 2px; color: var(--navy); font-family: "SF Mono", Consolas, monospace; }
+        .top-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--navy), var(--sky)); }
+        .reveal .controls { color: var(--sky); }
+        .reveal .progress { color: var(--sky); height: 3px; }
+        .reveal pre { box-shadow: none; font-size: 0.48em; margin: 5px 0; }
+        .reveal pre code { background: #1E293B; color: #E2E8F0; padding: 10px 14px; border-radius: 4px; line-height: 1.5; }
 
-        .stat-row { display: flex; justify-content: center; gap: 15px; margin: 12px 0; }
-        .stat-box { background: var(--citi-light); border-left: 3px solid var(--citi-sky); padding: 8px 16px; border-radius: 3px; text-align: center; }
-        .stat-box .num { font-size: 1.6em; font-weight: 700; color: var(--citi-navy); display: block; line-height: 1.2; }
-        .stat-box .lbl { font-size: 0.5em; color: var(--citi-gray); }
-
-        .arch-svg { max-width: 100%; height: auto; }
-        .arch-grid { display: grid; gap: 8px; font-size: 0.52em; }
-        .arch-card { background: var(--citi-white); border: 1px solid #E2E8F0; border-radius: 4px; padding: 8px 10px; text-align: left; }
-        .arch-card strong { color: var(--citi-navy); font-size: 1.05em; display: block; margin-bottom: 2px; }
-        .arch-card span { color: var(--citi-gray); line-height: 1.4; }
-        .arch-card.operator { border-top: 2px solid var(--citi-navy); }
-        .arch-card.agent { border-top: 2px solid var(--citi-sky); }
-        .arch-card.support { border-top: 2px solid var(--citi-green); }
-
-        .safety-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
-        .safety-card { border: 1px solid #E2E8F0; border-top: 2px solid var(--citi-sky); padding: 10px 12px; border-radius: 4px; text-align: left; }
-        .safety-card h4 { color: var(--citi-navy); font-size: 0.62em; margin: 0 0 4px 0; }
-        .safety-card p { font-size: 0.52em; margin: 0; }
-
-        .impact-row { display: flex; gap: 12px; margin: 10px 0; }
-        .impact-card { flex: 1; background: var(--citi-light); padding: 12px; border-radius: 4px; text-align: center; }
-        .impact-card .val { font-size: 1.4em; font-weight: 700; color: var(--citi-navy); display: block; }
-        .impact-card .desc { font-size: 0.48em; color: var(--citi-gray); }
-
-        .cta-box { background: linear-gradient(135deg, var(--citi-navy), var(--citi-dark)); color: white; padding: 14px 20px; border-radius: 6px; margin-top: 10px; }
-        .cta-box h4 { color: var(--citi-sky); margin: 0 0 6px 0; font-size: 0.7em; }
-        .cta-box p { color: rgba(255,255,255,0.9); font-size: 0.52em; margin: 0; line-height: 1.7; }
-
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .highlight { color: var(--citi-sky); font-weight: 600; }
-        .tag { display: inline-block; background: var(--citi-light); color: var(--citi-navy); padding: 1px 6px; border-radius: 3px; font-size: 0.85em; font-weight: 600; }
+        .stat-row { display: flex; justify-content: center; gap: 12px; margin: 8px 0; }
+        .stat-box { background: var(--light); border-left: 3px solid var(--sky); padding: 6px 14px; border-radius: 3px; text-align: center; }
+        .stat-box .num { font-size: 1.5em; font-weight: 700; color: var(--navy); display: block; line-height: 1.2; }
+        .stat-box .lbl { font-size: 0.48em; color: var(--gray); }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .safety-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 0; }
+        .safety-card { border: 1px solid #E2E8F0; border-top: 2px solid var(--sky); padding: 8px 10px; border-radius: 4px; text-align: left; }
+        .safety-card h4 { color: var(--navy); font-size: 0.56em; margin: 0 0 3px 0; }
+        .safety-card p { font-size: 0.46em; margin: 0; line-height: 1.4; }
+        .impact-row { display: flex; gap: 10px; margin: 8px 0; }
+        .impact-card { flex: 1; background: var(--light); padding: 10px; border-radius: 4px; text-align: center; }
+        .impact-card .val { font-size: 1.3em; font-weight: 700; color: var(--navy); display: block; }
+        .impact-card .desc { font-size: 0.44em; color: var(--gray); }
+        .cta-box { background: linear-gradient(135deg, var(--navy), var(--dark)); color: white; padding: 12px 16px; border-radius: 6px; margin-top: 8px; }
+        .cta-box h4 { color: var(--sky); margin: 0 0 5px 0; font-size: 0.65em; }
+        .cta-box p { color: rgba(255,255,255,0.9); font-size: 0.48em; margin: 0; line-height: 1.6; }
+        .tag { display: inline-block; background: var(--light); color: var(--navy); padding: 1px 5px; border-radius: 2px; font-size: 0.82em; font-weight: 600; }
+        .highlight { color: var(--sky); font-weight: 600; }
+        .mock-terminal { background: #1E293B; color: #E2E8F0; padding: 8px 12px; border-radius: 4px; font-family: "SF Mono", Consolas, monospace; font-size: 0.44em; line-height: 1.6; text-align: left; overflow: hidden; }
+        .mock-slack { background: white; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 14px; text-align: left; font-size: 0.46em; }
+        .mock-slack .bot-name { color: var(--navy); font-weight: 700; font-size: 1.1em; }
+        .mock-slack .msg { color: var(--gray); margin: 4px 0; }
+        .mock-slack .btn { display: inline-block; padding: 3px 10px; border-radius: 3px; font-size: 0.9em; font-weight: 600; margin-right: 5px; cursor: default; }
+        .mock-slack .btn-approve { background: var(--green); color: white; }
+        .mock-slack .btn-reject { background: #F1F5F9; color: var(--gray); border: 1px solid #E2E8F0; }
     </style>
 </head>
 <body>
 <div class="reveal">
 <div class="slides">
 
-<!-- ═══════════════ SLIDE 1: The Problem ═══════════════ -->
+<!-- ═══════════════ SLIDE 0: TITLE ═══════════════ -->
+<section>
+<div class="top-bar"></div>
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+    <div style="margin-bottom: 20px;">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="36" fill="none" stroke="#003B70" stroke-width="3"/>
+            <circle cx="40" cy="40" r="24" fill="none" stroke="#00BDF2" stroke-width="2"/>
+            <circle cx="40" cy="40" r="12" fill="#003B70"/>
+            <path d="M 40 4 L 40 16" stroke="#003B70" stroke-width="2"/>
+            <path d="M 40 64 L 40 76" stroke="#003B70" stroke-width="2"/>
+            <path d="M 4 40 L 16 40" stroke="#003B70" stroke-width="2"/>
+            <path d="M 64 40 L 76 40" stroke="#003B70" stroke-width="2"/>
+        </svg>
+    </div>
+    <h1 style="font-size: 2.2em; margin: 0;">Kubernaut</h1>
+    <h3 style="font-size: 1.0em; color: var(--sky); margin: 5px 0 25px 0; font-weight: 400;">Intelligent Remediation for OpenShift Operations</h3>
+    <p style="font-size: 0.6em; color: var(--gray); margin: 0;">Agentic AI Platform for Autonomous Investigation &amp; Remediation</p>
+    <p style="font-size: 0.5em; color: #94A3B8; margin-top: 30px;">OpenShift Ops Team | July 2026</p>
+</div>
+<aside class="notes">
+<p><strong>30 seconds.</strong> "Good morning/afternoon everyone. Today I'm going to show you something I'm genuinely excited about -- a platform called Kubernaut that I believe can fundamentally change how we do OpenShift operations. Let's dive in."</p>
+</aside>
+</section>
+
+<!-- ═══════════════ SLIDE 1: THE PROBLEM ═══════════════ -->
 <section>
 <div class="top-bar"></div>
 <h2>The Problem: OpenShift Ops at Scale</h2>
@@ -77,399 +98,590 @@
     <div class="stat-box"><span class="num">500+</span><span class="lbl">Alerts / SRE / week</span></div>
     <div class="stat-box"><span class="num">70%</span><span class="lbl">Repetitive (known fix)</span></div>
     <div class="stat-box"><span class="num">47 min</span><span class="lbl">Avg MTTR</span></div>
-    <div class="stat-box"><span class="num">80%</span><span class="lbl">Time spent investigating</span></div>
+    <div class="stat-box"><span class="num">80%</span><span class="lbl">Time investigating</span></div>
 </div>
 
-<div class="two-col" style="margin-top: 15px; font-size: 0.55em;">
+<div class="two-col" style="font-size: 0.5em; margin-top: 8px;">
     <div style="text-align: left;">
-        <strong style="color: var(--citi-navy);">Today's Workflow</strong>
-        <ol style="margin: 5px 0; padding-left: 18px; line-height: 1.8;">
+        <strong style="color: var(--navy);">Today's Manual Workflow</strong>
+        <ol style="margin: 3px 0; padding-left: 16px; line-height: 1.7;">
             <li>Alert fires (Prometheus / OCP Event)</li>
             <li>PagerDuty pages on-call engineer</li>
-            <li>Engineer wakes up, opens laptop</li>
-            <li>Reads alert, opens Grafana dashboards</li>
-            <li>Runs <code>oc logs</code>, <code>oc describe</code>, <code>oc get events</code></li>
+            <li>Engineer investigates: <code>oc logs</code>, <code>oc describe</code>, dashboards</li>
             <li>Identifies root cause (15-20 min)</li>
-            <li>Executes fix (<code>oc rollout undo</code>, <code>oc scale</code>)</li>
+            <li>Executes fix: <code>oc rollout undo</code>, <code>oc scale</code></li>
             <li>Hopes it worked, goes back to sleep</li>
         </ol>
     </div>
     <div style="text-align: left;">
-        <strong style="color: var(--citi-navy);">What's Broken</strong>
-        <ul style="margin: 5px 0; padding-left: 18px; line-height: 1.8;">
-            <li><strong>Alert fatigue:</strong> 70% repetitive = noise, missed real issues</li>
-            <li><strong>Tribal knowledge:</strong> Best engineer's mental model isn't codified</li>
-            <li><strong>Investigation bottleneck:</strong> 80% of MTTR is figuring out what's wrong</li>
-            <li><strong>No verification:</strong> "I restarted it" but did the problem resolve?</li>
-            <li><strong>Compliance gap:</strong> Manual changes lack audit trail</li>
-            <li><strong>Scaling problem:</strong> More clusters = more pages, same team</li>
+        <strong style="color: var(--navy);">What's Broken</strong>
+        <ul style="margin: 3px 0; padding-left: 16px; line-height: 1.7;">
+            <li><strong>Alert fatigue:</strong> noise drowns real issues</li>
+            <li><strong>Tribal knowledge:</strong> best SRE's mental model isn't codified</li>
+            <li><strong>Investigation bottleneck:</strong> 80% of MTTR is diagnosis</li>
+            <li><strong>No verification:</strong> "restarted pod" but did it resolve?</li>
+            <li><strong>Compliance gap:</strong> manual changes lack audit trail</li>
+            <li><strong>Scaling:</strong> more clusters = more pages, same team</li>
         </ul>
     </div>
 </div>
 
-<aside class="notes">
-<h3>SPEAKER NOTES -- Slide 1 (0:00 - 6:00)</h3>
-<p><strong>Opening:</strong> "Before I show you a solution, I want to make sure we're aligned on the problem. And I think everyone in this room will recognize this immediately."</p>
-<p><strong>Engagement:</strong> "Quick show of hands -- how many of you have been paged at 3am for something that turned out to be a known issue with a known fix? [pause] That's the 70% right there."</p>
-<p><strong>Walk the left column:</strong> "This is the workflow today. Alert fires, PagerDuty pages someone, they open their laptop half-asleep, and spend 15-20 minutes just INVESTIGATING. Reading logs, checking dashboards, correlating events. The actual fix -- the oc rollout undo -- takes 30 seconds. But getting to that point takes 20 minutes of cognitive work that a machine could do in seconds."</p>
-<p><strong>The right column:</strong> "And here's what's really broken. First, alert fatigue -- when 70% of your alerts are noise, you start ignoring all of them. Second, tribal knowledge -- your best SRE knows exactly what to check for a CrashLoopBackOff vs an OOM kill vs a stuck deployment. That knowledge lives in their head. When they're on vacation, or leave the team, it's gone."</p>
-<p><strong>The killer point:</strong> "And nobody verifies. We restart the pod and go back to sleep. But did the underlying problem actually resolve? Are metrics back to normal? We don't close the loop."</p>
-<p><strong>Transition:</strong> "What if we could take that best SRE's investigation methodology, codify it into an AI agent that operates 24/7, executes proven remediations, and actually verifies the outcome? That's Kubernaut."</p>
-<p><strong>Timing:</strong> 5-6 minutes. Don't rush the pain -- it's what makes the solution land.</p>
-</aside>
-</section>
-
-<!-- ═══════════════ SLIDE 2: What Kubernaut Is ═══════════════ -->
-<section>
-<div class="top-bar"></div>
-<h2>Kubernaut: Intelligent Remediation for OpenShift</h2>
-<h3>Kubernetes-native operator with LLM-powered investigation agent</h3>
-
-<div style="text-align:center; margin: 10px 0;">
-<svg viewBox="0 0 900 280" class="arch-svg" style="max-width: 820px;">
-    <!-- Signal sources -->
-    <rect x="10" y="100" width="110" height="80" rx="6" fill="#F1F5F9" stroke="#94A3B8"/>
-    <text x="65" y="130" text-anchor="middle" font-size="11" fill="#003B70" font-weight="700">Signal Sources</text>
-    <text x="65" y="148" text-anchor="middle" font-size="9" fill="#4A5568">Prometheus</text>
-    <text x="65" y="162" text-anchor="middle" font-size="9" fill="#4A5568">OCP Events</text>
-    <text x="65" y="176" text-anchor="middle" font-size="9" fill="#4A5568">AlertManager</text>
-
-    <!-- Arrow -->
-    <path d="M 125 140 L 155 140" stroke="#00BDF2" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-    <!-- Operator Box -->
-    <rect x="160" y="20" width="520" height="240" rx="8" fill="none" stroke="#003B70" stroke-width="2" stroke-dasharray="6,3"/>
-    <text x="420" y="42" text-anchor="middle" font-size="10" fill="#003B70" font-weight="700">KUBERNAUT OPERATOR (kubernaut-system namespace)</text>
-
-    <!-- Gateway -->
-    <rect x="175" y="55" width="95" height="55" rx="4" fill="#003B70"/>
-    <text x="222" y="77" text-anchor="middle" font-size="9.5" fill="white" font-weight="600">Gateway</text>
-    <text x="222" y="92" text-anchor="middle" font-size="7.5" fill="#B0C4DE">Dedup + Normalize</text>
-    <text x="222" y="103" text-anchor="middle" font-size="7.5" fill="#B0C4DE">Creates RR CRD</text>
-
-    <!-- Signal Processing -->
-    <rect x="285" y="55" width="95" height="55" rx="4" fill="#003B70"/>
-    <text x="332" y="77" text-anchor="middle" font-size="9.5" fill="white" font-weight="600">Signal Proc</text>
-    <text x="332" y="92" text-anchor="middle" font-size="7.5" fill="#B0C4DE">K8s Enrichment</text>
-    <text x="332" y="103" text-anchor="middle" font-size="7.5" fill="#B0C4DE">Rego Classification</text>
-
-    <!-- Orchestrator -->
-    <rect x="395" y="55" width="95" height="55" rx="4" fill="#003B70"/>
-    <text x="442" y="72" text-anchor="middle" font-size="9.5" fill="white" font-weight="600">Orchestrator</text>
-    <text x="442" y="87" text-anchor="middle" font-size="7.5" fill="#B0C4DE">Phase State Machine</text>
-    <text x="442" y="98" text-anchor="middle" font-size="7.5" fill="#B0C4DE">Creates Child CRDs</text>
-    <text x="442" y="109" text-anchor="middle" font-size="7.5" fill="#B0C4DE">Routing + Timeout</text>
-
-    <!-- Workflow Execution -->
-    <rect x="505" y="55" width="95" height="55" rx="4" fill="#00BDF2"/>
-    <text x="552" y="77" text-anchor="middle" font-size="9.5" fill="white" font-weight="600">Workflow Exec</text>
-    <text x="552" y="92" text-anchor="middle" font-size="7.5" fill="white">Tekton / Jobs</text>
-    <text x="552" y="103" text-anchor="middle" font-size="7.5" fill="white">Ansible</text>
-
-    <!-- Effectiveness -->
-    <rect x="615" y="55" width="95" height="55" rx="4" fill="#10B981"/>
-    <text x="662" y="77" text-anchor="middle" font-size="9.5" fill="white" font-weight="600">Effectiveness</text>
-    <text x="662" y="92" text-anchor="middle" font-size="7.5" fill="white">Health + Metrics</text>
-    <text x="662" y="103" text-anchor="middle" font-size="7.5" fill="white">Alert Resolution</text>
-
-    <!-- AI Agent Box -->
-    <rect x="175" y="125" width="280" height="120" rx="6" fill="#F0F9FF" stroke="#00BDF2" stroke-width="1.5"/>
-    <text x="315" y="143" text-anchor="middle" font-size="10" fill="#00BDF2" font-weight="700">KUBERNAUT AGENT (LLM Investigation)</text>
-    <text x="200" y="163" font-size="8.5" fill="#4A5568">Phase 1: Root Cause Analysis</text>
-    <text x="200" y="177" font-size="8" fill="#6B7280">  LLM queries: logs, metrics, events, deploys</text>
-    <text x="200" y="191" font-size="8" fill="#6B7280">  Tools: kubectl, prometheus, alertmanager</text>
-    <text x="200" y="208" font-size="8.5" fill="#4A5568">Phase 2: Workflow Selection</text>
-    <text x="200" y="222" font-size="8" fill="#6B7280">  Searches workflow catalog (DataStorage)</text>
-    <text x="200" y="236" font-size="8" fill="#6B7280">  Selects + validates against schema</text>
-
-    <!-- Shadow Agent -->
-    <rect x="470" y="135" width="105" height="50" rx="4" fill="#FEF3C7" stroke="#F59E0B"/>
-    <text x="522" y="155" text-anchor="middle" font-size="8.5" fill="#92400E" font-weight="600">Shadow Agent</text>
-    <text x="522" y="168" text-anchor="middle" font-size="7.5" fill="#78350F">Alignment Check</text>
-    <text x="522" y="179" text-anchor="middle" font-size="7.5" fill="#78350F">Prompt Injection Guard</text>
-
-    <!-- Data Storage -->
-    <rect x="470" y="195" width="105" height="48" rx="4" fill="#F1F5F9" stroke="#94A3B8"/>
-    <text x="522" y="215" text-anchor="middle" font-size="8.5" fill="#003B70" font-weight="600">Data Storage</text>
-    <text x="522" y="228" text-anchor="middle" font-size="7.5" fill="#4A5568">PostgreSQL + Audit</text>
-    <text x="522" y="239" text-anchor="middle" font-size="7.5" fill="#4A5568">Workflow Catalog</text>
-
-    <!-- Notification -->
-    <rect x="590" y="135" width="85" height="48" rx="4" fill="#F1F5F9" stroke="#94A3B8"/>
-    <text x="632" y="155" text-anchor="middle" font-size="8.5" fill="#003B70" font-weight="600">Notification</text>
-    <text x="632" y="168" text-anchor="middle" font-size="7.5" fill="#4A5568">Slack / PagerDuty</text>
-    <text x="632" y="179" text-anchor="middle" font-size="7.5" fill="#4A5568">Approval Requests</text>
-
-    <!-- Auth -->
-    <rect x="590" y="195" width="85" height="48" rx="4" fill="#F1F5F9" stroke="#94A3B8"/>
-    <text x="632" y="215" text-anchor="middle" font-size="8.5" fill="#003B70" font-weight="600">Auth Webhook</text>
-    <text x="632" y="228" text-anchor="middle" font-size="7.5" fill="#4A5568">Admission Control</text>
-    <text x="632" y="239" text-anchor="middle" font-size="7.5" fill="#4A5568">RBAC Enforcement</text>
-
-    <!-- Arrows between components -->
-    <path d="M 272 82 L 283 82" stroke="#00BDF2" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-    <path d="M 382 82 L 393 82" stroke="#00BDF2" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-    <path d="M 492 82 L 503 82" stroke="#00BDF2" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-    <path d="M 602 82 L 613 82" stroke="#00BDF2" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-    <!-- Orch to Agent -->
-    <path d="M 442 112 L 442 123 L 350 123 L 350 125" stroke="#003B70" stroke-width="1.5" marker-end="url(#arrowhead)" stroke-dasharray="4,2"/>
-
-    <!-- Target cluster -->
-    <rect x="730" y="60" width="100" height="60" rx="6" fill="#F1F5F9" stroke="#94A3B8"/>
-    <text x="780" y="82" text-anchor="middle" font-size="10" fill="#003B70" font-weight="700">OpenShift</text>
-    <text x="780" y="96" text-anchor="middle" font-size="8" fill="#4A5568">Target Cluster</text>
-    <text x="780" y="108" text-anchor="middle" font-size="8" fill="#4A5568">(managed ns only)</text>
-    <path d="M 602 82 L 613 82" stroke="#00BDF2" stroke-width="1.5"/>
-    <path d="M 712 82 L 728 82" stroke="#10B981" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-    <!-- Arrowhead marker -->
-    <defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M 0 0 L 8 3 L 0 6 z" fill="#003B70"/></marker></defs>
+<!-- MTTR Comparison Bar -->
+<div style="margin-top: 10px;">
+<svg viewBox="0 0 800 55" style="max-width: 750px;">
+    <text x="5" y="15" font-size="9" fill="#003B70" font-weight="700">MTTR Comparison</text>
+    <!-- Before -->
+    <text x="5" y="32" font-size="8" fill="#4A5568">Today (manual):</text>
+    <rect x="120" y="24" width="400" height="14" rx="3" fill="#FEE2E2"/>
+    <rect x="120" y="24" width="320" height="14" rx="3" fill="#EF4444" opacity="0.7"/>
+    <text x="130" y="34" font-size="7.5" fill="white" font-weight="600">Investigation: 38 min</text>
+    <rect x="440" y="24" width="80" height="14" rx="3" fill="#F87171"/>
+    <text x="448" y="34" font-size="7" fill="white">Fix: 9 min</text>
+    <text x="530" y="34" font-size="8" fill="#EF4444" font-weight="700">47 min total</text>
+    <!-- After -->
+    <text x="5" y="50" font-size="8" fill="#4A5568">With Kubernaut:</text>
+    <rect x="120" y="42" width="60" height="14" rx="3" fill="#10B981" opacity="0.7"/>
+    <text x="125" y="52" font-size="7" fill="white">AI: 15s</text>
+    <rect x="180" y="42" width="80" height="14" rx="3" fill="#059669"/>
+    <text x="188" y="52" font-size="7" fill="white">Execute: 90s</text>
+    <rect x="260" y="42" width="50" height="14" rx="3" fill="#047857"/>
+    <text x="265" y="52" font-size="7" fill="white">Verify: 30s</text>
+    <text x="320" y="52" font-size="8" fill="#10B981" font-weight="700">~2.5 min total (95% reduction)</text>
 </svg>
 </div>
 
-<div class="two-col" style="font-size: 0.5em; margin-top: 5px;">
-    <div style="text-align: left;">
-        <strong style="color: var(--citi-navy);">Operator Pattern (controller-runtime)</strong>
-        <ul style="margin: 3px 0; padding-left: 14px; line-height: 1.6;">
-            <li>10 Custom Resource Definitions on <code>kubernaut.ai/v1alpha1</code></li>
-            <li>CRD-driven state machine: Pending &rarr; Processing &rarr; Analyzing &rarr; Executing &rarr; Verifying</li>
-            <li>Owner references for cascading lifecycle (parent deletes children)</li>
-            <li>Leader election + namespace-scoped cache per controller</li>
-        </ul>
+<aside class="notes">
+<h3>SPEAKER NOTES -- Slide 1 (0:30 - 4:30)</h3>
+<p><strong>Opening:</strong> "Quick show of hands -- how many of you have been paged at 3am for something that turned out to be a known issue? [pause] That's the 70% right there."</p>
+<p><strong>Stats:</strong> "500 alerts per SRE per week. 70% repetitive. And the killer: 80% of MTTR is investigation -- reading logs, checking dashboards, correlating events. The actual fix takes 30 seconds."</p>
+<p><strong>MTTR bar:</strong> "Look at this comparison. Today: 38 minutes investigating, 9 minutes fixing. With Kubernaut: the agent investigates in 15 seconds, executes in 90, and verifies in 30. That's 47 minutes down to 2.5."</p>
+<p><strong>Transition:</strong> "What if we could take that best SRE's methodology and run it as an autonomous agent, 24/7, with full audit trail? That's Kubernaut."</p>
+<p><strong>Timing:</strong> 4 minutes. The MTTR bar is the visual anchor -- point to it.</p>
+</aside>
+</section>
+
+<!-- ═══════════════ SLIDE 2: ARCHITECTURE ═══════════════ -->
+<section>
+<div class="top-bar"></div>
+<h2>Platform Architecture</h2>
+<h3>Kubernetes-native operator + autonomous AI agent -- 12 microservices, CRD-driven orchestration</h3>
+
+<div style="text-align:center; margin: 5px 0;">
+<svg viewBox="0 0 920 290" style="max-width: 860px;">
+    <defs>
+        <marker id="arr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5z" fill="#003B70"/></marker>
+        <marker id="arr-sky" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5z" fill="#00BDF2"/></marker>
+        <marker id="arr-green" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5z" fill="#10B981"/></marker>
+    </defs>
+    <!-- Signal sources -->
+    <rect x="5" y="95" width="100" height="85" rx="5" fill="#F8FAFC" stroke="#94A3B8"/>
+    <text x="55" y="115" text-anchor="middle" font-size="9.5" fill="#003B70" font-weight="700">Signal Sources</text>
+    <text x="55" y="131" text-anchor="middle" font-size="8" fill="#4A5568">Prometheus AM</text>
+    <text x="55" y="144" text-anchor="middle" font-size="8" fill="#4A5568">OCP Events</text>
+    <text x="55" y="157" text-anchor="middle" font-size="8" fill="#4A5568">ServiceNow</text>
+    <text x="55" y="170" text-anchor="middle" font-size="8" fill="#4A5568">Custom Webhooks</text>
+
+    <path d="M 108 137 L 133 137" stroke="#00BDF2" stroke-width="2" marker-end="url(#arr-sky)"/>
+
+    <!-- Operator boundary -->
+    <rect x="138" y="10" width="555" height="272" rx="8" fill="none" stroke="#003B70" stroke-width="2" stroke-dasharray="6,3"/>
+    <text x="415" y="28" text-anchor="middle" font-size="9" fill="#003B70" font-weight="700">KUBERNAUT OPERATOR  --  kubernaut-system namespace  --  controller-runtime / Kubebuilder v4</text>
+
+    <!-- Top row: CRD Controllers -->
+    <rect x="148" y="38" width="82" height="48" rx="3" fill="#003B70"/>
+    <text x="189" y="56" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Gateway</text>
+    <text x="189" y="68" text-anchor="middle" font-size="7" fill="#B0C4DE">Dedup + CRD</text>
+    <text x="189" y="79" text-anchor="middle" font-size="7" fill="#B0C4DE">Fingerprint</text>
+
+    <rect x="240" y="38" width="82" height="48" rx="3" fill="#003B70"/>
+    <text x="281" y="56" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Signal Proc</text>
+    <text x="281" y="68" text-anchor="middle" font-size="7" fill="#B0C4DE">K8s Enrich</text>
+    <text x="281" y="79" text-anchor="middle" font-size="7" fill="#B0C4DE">Rego Policy</text>
+
+    <rect x="332" y="38" width="95" height="48" rx="3" fill="#003B70"/>
+    <text x="379" y="53" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Orchestrator</text>
+    <text x="379" y="65" text-anchor="middle" font-size="7" fill="#B0C4DE">Phase State Machine</text>
+    <text x="379" y="76" text-anchor="middle" font-size="7" fill="#B0C4DE">Child CRD Creator</text>
+    <text x="379" y="87" text-anchor="middle" font-size="6.5" fill="#B0C4DE">Routing / Timeout</text>
+
+    <rect x="437" y="38" width="82" height="48" rx="3" fill="#00BDF2"/>
+    <text x="478" y="56" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Workflow Exec</text>
+    <text x="478" y="68" text-anchor="middle" font-size="7" fill="white">Tekton / Job</text>
+    <text x="478" y="79" text-anchor="middle" font-size="7" fill="white">Ansible</text>
+
+    <rect x="529" y="38" width="82" height="48" rx="3" fill="#10B981"/>
+    <text x="570" y="56" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Effectiveness</text>
+    <text x="570" y="68" text-anchor="middle" font-size="7" fill="white">Health + Metrics</text>
+    <text x="570" y="79" text-anchor="middle" font-size="7" fill="white">Score 0-100</text>
+
+    <rect x="621" y="38" width="62" height="48" rx="3" fill="#003B70"/>
+    <text x="652" y="58" text-anchor="middle" font-size="8" fill="white" font-weight="600">Notif</text>
+    <text x="652" y="70" text-anchor="middle" font-size="7" fill="#B0C4DE">Slack/PD</text>
+    <text x="652" y="80" text-anchor="middle" font-size="7" fill="#B0C4DE">Approval</text>
+
+    <!-- Arrows top row -->
+    <path d="M 232 62 L 238 62" stroke="#00BDF2" stroke-width="1.2" marker-end="url(#arr-sky)"/>
+    <path d="M 324 62 L 330 62" stroke="#00BDF2" stroke-width="1.2" marker-end="url(#arr-sky)"/>
+    <path d="M 429 62 L 435 62" stroke="#00BDF2" stroke-width="1.2" marker-end="url(#arr-sky)"/>
+    <path d="M 521 62 L 527 62" stroke="#10B981" stroke-width="1.2" marker-end="url(#arr-green)"/>
+    <path d="M 613 62 L 619 62" stroke="#003B70" stroke-width="1.2" marker-end="url(#arr)"/>
+
+    <!-- AGENT BOX -->
+    <rect x="148" y="100" width="310" height="170" rx="6" fill="#F0F9FF" stroke="#00BDF2" stroke-width="1.5"/>
+    <text x="303" y="117" text-anchor="middle" font-size="9.5" fill="#00BDF2" font-weight="700">KUBERNAUT AGENT (Agentic AI Investigation Engine)</text>
+
+    <!-- Agent internals -->
+    <text x="163" y="136" font-size="8" fill="#003B70" font-weight="600">Phase 1: Root Cause Analysis (ReAct Loop)</text>
+    <text x="168" y="149" font-size="7.5" fill="#4A5568">Agent reasons autonomously: what to check, how deep to go</text>
+    <text x="168" y="161" font-size="7.5" fill="#4A5568">Tools: kubectl, prometheus, logs, alertmanager, fleet-mcp</text>
+    <text x="168" y="173" font-size="7.5" fill="#4A5568">Multi-turn: 3-8 tool calls per investigation (~10-30s)</text>
+
+    <text x="163" y="192" font-size="8" fill="#003B70" font-weight="600">Phase 2: Workflow Discovery + Selection</text>
+    <text x="168" y="205" font-size="7.5" fill="#4A5568">Searches curated catalog, validates against schema</text>
+    <text x="168" y="217" font-size="7.5" fill="#4A5568">Self-corrects: up to 3 validation attempts</text>
+
+    <text x="163" y="236" font-size="8" fill="#003B70" font-weight="600">Pre-enrichment: owner chain, labels, remediation history</text>
+    <text x="163" y="250" font-size="7.5" fill="#4A5568">MCP Interactive: human takeover mid-investigation</text>
+    <text x="163" y="263" font-size="7.5" fill="#4A5568">Multi-LLM: OpenAI, Anthropic, Gemini, Ollama (air-gap)</text>
+
+    <!-- Shadow Agent -->
+    <rect x="470" y="100" width="115" height="62" rx="4" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.2"/>
+    <text x="527" y="118" text-anchor="middle" font-size="8.5" fill="#92400E" font-weight="600">Shadow Agent</text>
+    <text x="527" y="131" text-anchor="middle" font-size="7" fill="#78350F">Alignment Evaluator</text>
+    <text x="527" y="143" text-anchor="middle" font-size="7" fill="#78350F">Prompt Injection Guard</text>
+    <text x="527" y="155" text-anchor="middle" font-size="7" fill="#78350F">Fail-Closed Circuit Breaker</text>
+
+    <!-- Data Storage -->
+    <rect x="470" y="172" width="115" height="52" rx="4" fill="#F8FAFC" stroke="#94A3B8"/>
+    <text x="527" y="190" text-anchor="middle" font-size="8.5" fill="#003B70" font-weight="600">Data Storage</text>
+    <text x="527" y="203" text-anchor="middle" font-size="7" fill="#4A5568">PostgreSQL + Audit</text>
+    <text x="527" y="214" text-anchor="middle" font-size="7" fill="#4A5568">Workflow Catalog (OCI)</text>
+    <text x="527" y="225" text-anchor="middle" font-size="7" fill="#4A5568">Hash-Chain Immutable</text>
+
+    <!-- Auth Webhook -->
+    <rect x="470" y="232" width="115" height="40" rx="4" fill="#F8FAFC" stroke="#94A3B8"/>
+    <text x="527" y="250" text-anchor="middle" font-size="8.5" fill="#003B70" font-weight="600">Auth Webhook</text>
+    <text x="527" y="263" text-anchor="middle" font-size="7" fill="#4A5568">K8s Admission + RBAC</text>
+
+    <!-- Orch to Agent arrow -->
+    <path d="M 379 88 L 379 98 L 303 98 L 303 100" stroke="#003B70" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+    <!-- Agent to DS arrow -->
+    <path d="M 460 200 L 468 200" stroke="#94A3B8" stroke-width="1" marker-end="url(#arr)"/>
+
+    <!-- Target clusters -->
+    <rect x="720" y="40" width="110" height="95" rx="6" fill="#F8FAFC" stroke="#94A3B8"/>
+    <text x="775" y="60" text-anchor="middle" font-size="9" fill="#003B70" font-weight="700">OpenShift</text>
+    <text x="775" y="74" text-anchor="middle" font-size="7.5" fill="#4A5568">Hub Cluster</text>
+    <text x="775" y="87" text-anchor="middle" font-size="7.5" fill="#4A5568">(managed namespaces)</text>
+    <!-- Fleet clusters -->
+    <rect x="720" y="145" width="110" height="55" rx="6" fill="#F8FAFC" stroke="#F59E0B" stroke-dasharray="3,2"/>
+    <text x="775" y="165" text-anchor="middle" font-size="8.5" fill="#92400E" font-weight="600">Fleet Clusters</text>
+    <text x="775" y="178" text-anchor="middle" font-size="7" fill="#4A5568">ACM / EAIGW</text>
+    <text x="775" y="191" text-anchor="middle" font-size="7" fill="#4A5568">MCP Federation</text>
+
+    <path d="M 695 62 L 718 62" stroke="#10B981" stroke-width="1.5" marker-end="url(#arr-green)"/>
+    <path d="M 590 170 L 718 170" stroke="#F59E0B" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+</svg>
+</div>
+
+<div class="two-col" style="font-size: 0.46em; margin-top: 3px;">
+    <div style="text-align:left;">
+        <strong style="color: var(--navy);">Operator Pattern</strong>: 10 CRDs on <code>kubernaut.ai/v1alpha1</code> | controller-runtime reconcilers | owner-ref cascading | leader election | namespace-scoped informer caches | OCP TLS profiles
     </div>
-    <div style="text-align: left;">
-        <strong style="color: var(--citi-navy);">Agent Architecture (LLM + Tools)</strong>
-        <ul style="margin: 3px 0; padding-left: 14px; line-height: 1.6;">
-            <li>Multi-turn LLM tool loop: RCA phase + Workflow Discovery phase</li>
-            <li>Tool registry: kubectl, Prometheus, logs, AlertManager, fleet MCP</li>
-            <li>Shadow agent alignment: prompt injection detection (fail-closed)</li>
-            <li>MCP interactive mode: human takeover mid-investigation</li>
-        </ul>
+    <div style="text-align:left;">
+        <strong style="color: var(--navy);">Deployment</strong>: <code>helm install kubernaut</code> | 12 pods in <code>kubernaut-system</code> | air-gap ready (OCI bundles) | PostgreSQL + Valkey | multi-arch (amd64/arm64)
     </div>
 </div>
 
 <aside class="notes">
-<h3>SPEAKER NOTES -- Slide 2 (6:00 - 12:00)</h3>
-<p><strong>Opening:</strong> "Let me show you what Kubernaut actually IS architecturally. This isn't a black-box SaaS -- it's a Kubernetes operator that runs inside your OpenShift cluster."</p>
-
-<p><strong>Walk the diagram top-to-bottom:</strong></p>
+<h3>SPEAKER NOTES -- Slide 2 (4:30 - 9:30)</h3>
+<p><strong>Opening:</strong> "This is the full architecture. Let me orient you."</p>
+<p><strong>Walk the diagram:</strong></p>
 <ul>
-<li>"Signal sources on the left -- Prometheus AlertManager, OpenShift events. They fire webhooks into the Gateway."</li>
-<li>"The top row is the OPERATOR layer -- these are CRD controllers built on controller-runtime, same framework Red Hat uses for their operators. Each one watches a Custom Resource and reconciles it through a state machine."</li>
-<li>"Gateway deduplicates (so if the same alert fires 50 times, you get one remediation, not 50). Signal Processing enriches with cluster context and classifies priority using Rego policies."</li>
-<li>"The Orchestrator is the brain -- it's a phase state machine. It creates child CRDs in sequence: first SignalProcessing, then AIAnalysis, then WorkflowExecution. Each controller reconciles independently. If one fails, the orchestrator handles timeout and retry."</li>
-<li>"The blue box is the Agent -- this is where the LLM lives. It runs a multi-turn investigation. First it does Root Cause Analysis: it calls kubectl, queries Prometheus, reads logs -- exactly what you'd do. Then it searches the workflow catalog and selects the right fix."</li>
-<li>"The yellow box is the Shadow Agent -- this is a safety net. A separate LLM evaluates every step of the investigation for prompt injection or suspicious behavior. If it detects something wrong, it circuit-breaks the whole investigation."</li>
-<li>"Workflow Execution creates Tekton PipelineRuns or K8s Jobs. Effectiveness Monitor verifies the fix worked."</li>
+<li>"Signal sources on the left -- Prometheus, OCP events, ServiceNow. They fire webhooks into the Gateway."</li>
+<li>"Top row: CRD controllers. Same operator pattern Red Hat uses to build OpenShift itself. Each watches a Custom Resource and reconciles through a state machine."</li>
+<li>"Gateway deduplicates by fingerprint. Signal Processing enriches with K8s context and runs Rego policy for priority classification."</li>
+<li>"The Orchestrator is the conductor -- creates child CRDs in sequence, manages timeouts, routing decisions."</li>
+<li>"Blue box: the Kubernaut Agent. This is the agentic AI engine. It's NOT a single LLM call -- it's an autonomous agent that reasons about what to investigate, selects tools, executes them, and iterates. Think of it like a virtual SRE that can read logs, query Prometheus, check deployment history -- and it does this in 10-30 seconds."</li>
+<li>"Yellow: Shadow Agent -- an independent AI that watches every investigation step for prompt injection. Fail-closed circuit breaker."</li>
+<li>"Right side: target clusters including fleet federation via ACM/MCP for multi-cluster remediation."</li>
 </ul>
-
-<p><strong>Key technical points to emphasize:</strong></p>
-<ul>
-<li>"This is completely CRD-driven. You can watch the whole thing with 'oc get rr,sp,aia,wfe,ea'. It's native Kubernetes."</li>
-<li>"The operator respects RBAC, SCCs, TLS profiles. It runs in its own namespace and only touches namespaces with the managed label."</li>
-<li>"The agent supports multiple LLM providers -- OpenAI, Anthropic, or locally-hosted models. In air-gapped environments, no data leaves the cluster."</li>
-</ul>
-
-<p><strong>If someone asks about the Agent internals:</strong> "The agent runs a multi-turn tool loop. The LLM decides which tools to call -- like an engineer deciding 'I should check the logs, then check if there was a recent deploy, then look at memory metrics.' Each tool call is logged and auditable. After RCA, it searches the workflow catalog and picks the most appropriate fix based on confidence scoring."</p>
-
-<p><strong>If someone asks about the Operator pattern:</strong> "Each service is a controller-runtime reconciler watching its own CRD. The Orchestrator creates child CRDs with owner references -- so when a RemediationRequest is deleted, all children cascade-delete automatically. State transitions are recorded as Kubernetes conditions. The whole thing is observable with standard kubectl/oc tooling."</p>
-
-<p><strong>Timing:</strong> Spend 5-6 minutes here. This is the technical credibility slide.</p>
+<p><strong>Key message:</strong> "Everything is CRD-native. You can monitor the whole thing with 'oc get rr,sp,aia,wfe,ea'. It's OpenShift-native, not bolted on."</p>
+<p><strong>Timing:</strong> 5 minutes. Don't explain every box -- focus on the flow.</p>
 </aside>
 </section>
 
-<!-- ═══════════════ SLIDE 3: CRD Lifecycle + Operator Deep-Dive ═══════════════ -->
+<!-- ═══════════════ SLIDE 3: CRD STATE MACHINE ═══════════════ -->
 <section>
 <div class="top-bar"></div>
 <h2>Operator Internals: CRD-Driven State Machine</h2>
-<h3>RemediationRequest lifecycle on OpenShift (controller-runtime reconciliation)</h3>
+<h3>RemediationRequest lifecycle -- each phase creates a child CRD, orchestrator reconciles transitions</h3>
 
-<div style="text-align: center; margin: 8px 0;">
-<svg viewBox="0 0 880 200" class="arch-svg" style="max-width: 830px;">
-    <!-- Phase boxes -->
-    <rect x="5" y="70" width="75" height="40" rx="4" fill="#003B70"/><text x="42" y="93" text-anchor="middle" font-size="9" fill="white" font-weight="600">Pending</text>
-    <rect x="105" y="70" width="85" height="40" rx="4" fill="#003B70"/><text x="147" y="93" text-anchor="middle" font-size="9" fill="white" font-weight="600">Processing</text>
-    <rect x="215" y="70" width="85" height="40" rx="4" fill="#003B70"/><text x="257" y="93" text-anchor="middle" font-size="9" fill="white" font-weight="600">Analyzing</text>
-    <rect x="325" y="70" width="95" height="40" rx="4" fill="#F59E0B"/><text x="372" y="88" text-anchor="middle" font-size="8" fill="white" font-weight="600">Awaiting</text><text x="372" y="100" text-anchor="middle" font-size="8" fill="white">Approval</text>
-    <rect x="445" y="70" width="80" height="40" rx="4" fill="#00BDF2"/><text x="485" y="93" text-anchor="middle" font-size="9" fill="white" font-weight="600">Executing</text>
-    <rect x="550" y="70" width="80" height="40" rx="4" fill="#10B981"/><text x="590" y="93" text-anchor="middle" font-size="9" fill="white" font-weight="600">Verifying</text>
-    <rect x="655" y="70" width="85" height="40" rx="4" fill="#059669"/><text x="697" y="93" text-anchor="middle" font-size="9" fill="white" font-weight="600">Completed</text>
-
-    <!-- Blocked (below) -->
-    <rect x="215" y="140" width="80" height="35" rx="4" fill="#EF4444"/><text x="255" y="161" text-anchor="middle" font-size="9" fill="white" font-weight="600">Blocked</text>
-    <!-- Failed -->
-    <rect x="775" y="70" width="70" height="40" rx="4" fill="#DC2626"/><text x="810" y="93" text-anchor="middle" font-size="9" fill="white" font-weight="600">Failed</text>
-
+<div style="text-align: center; margin: 5px 0;">
+<svg viewBox="0 0 880 165" style="max-width: 840px;">
+    <defs><marker id="a3" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4z" fill="#003B70"/></marker></defs>
+    <rect x="5" y="55" width="70" height="35" rx="3" fill="#003B70"/><text x="40" y="76" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Pending</text>
+    <rect x="95" y="55" width="80" height="35" rx="3" fill="#003B70"/><text x="135" y="76" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Processing</text>
+    <rect x="195" y="55" width="78" height="35" rx="3" fill="#003B70"/><text x="234" y="76" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Analyzing</text>
+    <rect x="293" y="55" width="88" height="35" rx="3" fill="#F59E0B"/><text x="337" y="70" text-anchor="middle" font-size="7.5" fill="white" font-weight="600">Awaiting</text><text x="337" y="82" text-anchor="middle" font-size="7.5" fill="white">Approval</text>
+    <rect x="401" y="55" width="75" height="35" rx="3" fill="#00BDF2"/><text x="438" y="76" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Executing</text>
+    <rect x="496" y="55" width="75" height="35" rx="3" fill="#10B981"/><text x="533" y="76" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Verifying</text>
+    <rect x="591" y="55" width="80" height="35" rx="3" fill="#059669"/><text x="631" y="76" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Completed</text>
+    <rect x="195" y="115" width="72" height="30" rx="3" fill="#EF4444"/><text x="231" y="134" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Blocked</text>
+    <rect x="750" y="55" width="60" height="35" rx="3" fill="#DC2626"/><text x="780" y="76" text-anchor="middle" font-size="8.5" fill="white" font-weight="600">Failed</text>
     <!-- Arrows -->
-    <path d="M 82 90 L 103 90" stroke="#003B70" stroke-width="1.5" marker-end="url(#ah2)"/>
-    <path d="M 192 90 L 213 90" stroke="#003B70" stroke-width="1.5" marker-end="url(#ah2)"/>
-    <path d="M 302 90 L 323 90" stroke="#F59E0B" stroke-width="1.5" marker-end="url(#ah2)"/>
-    <path d="M 422 90 L 443 90" stroke="#00BDF2" stroke-width="1.5" marker-end="url(#ah2)"/>
-    <path d="M 527 90 L 548 90" stroke="#10B981" stroke-width="1.5" marker-end="url(#ah2)"/>
-    <path d="M 632 90 L 653 90" stroke="#059669" stroke-width="1.5" marker-end="url(#ah2)"/>
+    <path d="M77 72 L93 72" stroke="#003B70" stroke-width="1.3" marker-end="url(#a3)"/>
+    <path d="M177 72 L193 72" stroke="#003B70" stroke-width="1.3" marker-end="url(#a3)"/>
+    <path d="M275 72 L291 72" stroke="#F59E0B" stroke-width="1.3" marker-end="url(#a3)"/>
+    <path d="M383 72 L399 72" stroke="#00BDF2" stroke-width="1.3" marker-end="url(#a3)"/>
+    <path d="M478 72 L494 72" stroke="#10B981" stroke-width="1.3" marker-end="url(#a3)"/>
+    <path d="M573 72 L589 72" stroke="#059669" stroke-width="1.3" marker-end="url(#a3)"/>
     <!-- Skip approval -->
-    <path d="M 302 80 Q 370 50 443 80" stroke="#00BDF2" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#ah2)"/>
-    <text x="370" y="52" text-anchor="middle" font-size="7" fill="#00BDF2">high confidence</text>
+    <path d="M275 62 Q335 38 399 62" stroke="#00BDF2" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#a3)"/>
+    <text x="335" y="40" text-anchor="middle" font-size="6.5" fill="#00BDF2">high confidence skip</text>
     <!-- To blocked -->
-    <path d="M 257 112 L 257 138" stroke="#EF4444" stroke-width="1.5" marker-end="url(#ah2)"/>
-    <!-- To failed -->
-    <path d="M 485 112 L 485 130 Q 485 145 500 145 L 790 145 L 810 145 L 810 112" stroke="#DC2626" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#ah2)"/>
-
-    <!-- CRD labels below phases -->
-    <text x="42" y="125" text-anchor="middle" font-size="7" fill="#6B7280">RR created</text>
-    <text x="147" y="125" text-anchor="middle" font-size="7" fill="#6B7280">SP CRD</text>
-    <text x="257" y="125" text-anchor="middle" font-size="7" fill="#6B7280">AIA CRD</text>
-    <text x="372" y="125" text-anchor="middle" font-size="7" fill="#6B7280">RAR CRD</text>
-    <text x="485" y="125" text-anchor="middle" font-size="7" fill="#6B7280">WFE CRD</text>
-    <text x="590" y="125" text-anchor="middle" font-size="7" fill="#6B7280">EA CRD</text>
-
-    <defs><marker id="ah2" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M 0 0 L 7 2.5 L 0 5 z" fill="#003B70"/></marker></defs>
+    <path d="M234 92 L234 113" stroke="#EF4444" stroke-width="1.2" marker-end="url(#a3)"/>
+    <!-- Failed path -->
+    <path d="M438 92 L438 105 Q438 112 450 112 L760 112 L780 112 L780 92" stroke="#DC2626" stroke-width="0.8" stroke-dasharray="3,2" marker-end="url(#a3)"/>
+    <!-- CRD labels -->
+    <text x="40" y="100" text-anchor="middle" font-size="6.5" fill="#6B7280">RR created</text>
+    <text x="135" y="100" text-anchor="middle" font-size="6.5" fill="#6B7280">SP CRD</text>
+    <text x="234" y="100" text-anchor="middle" font-size="6.5" fill="#6B7280">AIA CRD</text>
+    <text x="337" y="100" text-anchor="middle" font-size="6.5" fill="#6B7280">RAR + NR</text>
+    <text x="438" y="100" text-anchor="middle" font-size="6.5" fill="#6B7280">WFE CRD</text>
+    <text x="533" y="100" text-anchor="middle" font-size="6.5" fill="#6B7280">EA CRD</text>
+    <!-- Block reasons -->
+    <text x="231" y="155" text-anchor="middle" font-size="6" fill="#6B7280">ResourceBusy | Backoff | Unmanaged | ConsecFail</text>
 </svg>
 </div>
 
-<div style="font-size: 0.5em; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 8px;">
-    <div style="text-align: left;">
-        <strong style="color: var(--citi-navy);">CRD State Machine</strong>
-        <ul style="margin: 3px 0; padding-left: 14px; line-height: 1.7;">
-            <li>Each phase creates a child CRD (SP, AIA, WFE, EA)</li>
-            <li>Orchestrator watches child status via controller-runtime</li>
-            <li>Phase transition recorded as K8s Condition + audit event</li>
-            <li>Global timeout (1h) + per-phase timeouts (5m/10m/30m)</li>
-            <li>Blocked phase: resource busy, backoff, unmanaged scope</li>
-        </ul>
+<!-- oc get rr output -->
+<div style="margin: 5px auto; max-width: 820px;">
+<pre><code>$ oc get rr -n kubernaut-system
+NAME                    PHASE       OUTCOME      ALERT              RCA TARGET           WORKFLOW                 CONFIDENCE   AGE
+rr-a1b2c3d4e5f6-8k2m   Completed   Remediated   CrashLoopBackOff   Deployment/payment   RollbackDeployment:v2    0.92         4m
+rr-f7e8d9c0b1a2-3j4n   Executing                OOMKilled          Deployment/catalog   ScaleReplicas:v1         0.88         2m
+rr-c5d6e7f8a9b0-1h2i   Analyzing                HighLatency        Service/api-gw                                             45s
+rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3                                              12m</code></pre>
+</div>
+
+<div class="three-col" style="font-size: 0.46em;">
+    <div style="text-align:left;">
+        <strong style="color:var(--navy);">Each Controller Reconciles Its CRD</strong><br>
+        SP: enrichment + Rego classification<br>
+        AIA: dispatches to Agent HTTP API<br>
+        WFE: creates Tekton PipelineRun/Job<br>
+        EA: pre/post metric comparison + scoring
     </div>
-    <div style="text-align: left;">
-        <strong style="color: var(--citi-navy);">Operator Components (5 controllers)</strong>
-        <ul style="margin: 3px 0; padding-left: 14px; line-height: 1.7;">
-            <li><span class="tag">SP</span> Signal Processing: K8s enrichment + Rego policy eval</li>
-            <li><span class="tag">AIA</span> AI Analysis: dispatches to Kubernaut Agent HTTP API</li>
-            <li><span class="tag">WFE</span> Workflow Execution: Tekton/Job/Ansible backends</li>
-            <li><span class="tag">EA</span> Effectiveness Monitor: pre/post metric comparison</li>
-            <li><span class="tag">NR</span> Notification: multi-channel delivery CRD controller</li>
-        </ul>
+    <div style="text-align:left;">
+        <strong style="color:var(--navy);">Orchestrator Creates Children</strong><br>
+        Owner references: cascade delete<br>
+        Field indexes: O(1) fingerprint lookup<br>
+        Timeouts: global 1h + per-phase 5-30m<br>
+        Routing: resource lock, backoff, scope
     </div>
-    <div style="text-align: left;">
-        <strong style="color: var(--citi-navy);">OpenShift-Native Deployment</strong>
-        <ul style="margin: 3px 0; padding-left: 14px; line-height: 1.7;">
-            <li><code>helm install kubernaut ./charts/kubernaut</code></li>
-            <li>All CRDs: <code>oc get rr,sp,aia,wfe,ea,nr</code></li>
-            <li>Namespace-scoped cache (ADR-057)</li>
-            <li>Leader election for HA</li>
-            <li>OCP TLS profiles + cert-manager integration</li>
-        </ul>
+    <div style="text-align:left;">
+        <strong style="color:var(--navy);">Observable via oc/kubectl</strong><br>
+        <code>oc get rr,sp,aia,wfe,ea,nr</code><br>
+        <code>oc describe rr [name]</code> (conditions)<br>
+        Printer columns: phase, target, confidence<br>
+        K8s events on every transition
     </div>
 </div>
 
 <aside class="notes">
-<h3>SPEAKER NOTES -- Slide 3 (12:00 - 18:00)</h3>
-<p><strong>Opening:</strong> "Now let me show you how the operator actually works under the hood. This is the lifecycle of a single remediation."</p>
-
-<p><strong>Walk the state machine:</strong></p>
-<ul>
-<li>"When Gateway creates a RemediationRequest CRD, it starts in Pending. The Orchestrator picks it up and creates a SignalProcessing child CRD -- that's the Processing phase."</li>
-<li>"Once Signal Processing completes enrichment and classification, the Orchestrator creates an AIAnalysis CRD -- that's Analyzing. The AI Analysis controller dispatches to the Kubernaut Agent for investigation."</li>
-<li>"If confidence is below threshold -- say 75% for a production namespace -- it goes to Awaiting Approval. A RemediationApprovalRequest CRD is created, and a Notification CRD sends a Slack message. An operator approves or rejects."</li>
-<li>"If confidence is high enough, it skips straight to Executing -- that dashed blue line. A WorkflowExecution CRD is created. The WFE controller creates a Tekton PipelineRun or K8s Job."</li>
-<li>"After execution succeeds, it moves to Verifying. An EffectivenessAssessment CRD is created. The EM controller checks: is the alert resolved? Are pods healthy? Are metrics back to baseline?"</li>
-<li>"Only after verification passes does it reach Completed."</li>
-</ul>
-
-<p><strong>On the Blocked phase:</strong> "If there's already an active remediation on the same target resource -- say two alerts fire for the same deployment -- the second one goes to Blocked (ResourceBusy). It waits for the first to complete, then proceeds. This prevents conflicting concurrent modifications."</p>
-
-<p><strong>Key operator pattern points:</strong></p>
-<ul>
-<li>"Every phase transition is a Kubernetes status update with a condition. You can see exactly where a remediation is with 'oc describe rr [name]'."</li>
-<li>"Owner references mean when the parent RR is deleted, all children cascade-delete. Kubernetes garbage collection handles cleanup."</li>
-<li>"Each controller uses a namespace-scoped informer cache -- it only watches the kubernaut-system namespace. Minimal API server load."</li>
-</ul>
-
-<p><strong>If someone asks about scaling:</strong> "Each controller is independently scalable with leader election. The Orchestrator handles the coordination logic. If you have 1000 alerts/min, you can scale the Gateway and Signal Processing horizontally while the Orchestrator manages sequencing."</p>
-
-<p><strong>Timing:</strong> 5-6 minutes. The state machine diagram is the key visual -- trace through it while talking.</p>
+<h3>SPEAKER NOTES -- Slide 3 (9:30 - 13:30)</h3>
+<p><strong>Opening:</strong> "Let me show you the state machine and what it actually looks like in the terminal."</p>
+<p><strong>Walk phases:</strong> "Pending -> Processing (Signal Processing enriches) -> Analyzing (Agent investigates) -> if confidence high, skip to Executing, otherwise Awaiting Approval (Slack notification) -> Executing (Tekton runs) -> Verifying (effectiveness check) -> Completed."</p>
+<p><strong>The oc output:</strong> "This is what your operators see. Standard oc get. You can see one completed remediation (rollback, confidence 92%), one executing, one still analyzing, and one blocked because another workflow is running on that node. All native OpenShift tooling."</p>
+<p><strong>Blocked:</strong> "If two alerts fire for the same deployment, the second one blocks until the first completes. Prevents conflicting changes."</p>
+<p><strong>Timing:</strong> 4 minutes. The terminal output is the 'aha' moment for ops people -- point to it.</p>
 </aside>
 </section>
 
-<!-- ═══════════════ SLIDE 4: Safety + Compliance ═══════════════ -->
+<!-- ═══════════════ SLIDE 4: AGENT DEEP-DIVE ═══════════════ -->
+<section>
+<div class="top-bar"></div>
+<h2>Kubernaut Agent: Agentic Investigation Engine</h2>
+<h3>Autonomous AI agent with ReAct loop -- reasons, acts, observes, iterates until confident</h3>
+
+<div style="text-align:center; margin: 5px 0;">
+<svg viewBox="0 0 880 210" style="max-width: 840px;">
+    <defs><marker id="a4" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4z" fill="#003B70"/></marker></defs>
+    <!-- Context input -->
+    <rect x="5" y="15" width="120" height="50" rx="4" fill="#F0F9FF" stroke="#00BDF2"/>
+    <text x="65" y="33" text-anchor="middle" font-size="8" fill="#003B70" font-weight="600">Signal Context</text>
+    <text x="65" y="45" text-anchor="middle" font-size="7" fill="#4A5568">+ Pre-enrichment:</text>
+    <text x="65" y="56" text-anchor="middle" font-size="7" fill="#4A5568">owner chain, labels, history</text>
+
+    <path d="M 127 40 L 147 40" stroke="#00BDF2" stroke-width="1.5" marker-end="url(#a4)"/>
+
+    <!-- Turn 1 -->
+    <rect x="150" y="10" width="155" height="55" rx="4" fill="white" stroke="#003B70"/>
+    <text x="227" y="25" text-anchor="middle" font-size="7.5" fill="#003B70" font-weight="700">Turn 1: Agent Reasons</text>
+    <text x="160" y="38" font-size="7" fill="#4A5568">"OOMKilled -- need to check pod logs</text>
+    <text x="160" y="49" font-size="7" fill="#4A5568"> and memory metrics"</text>
+    <text x="160" y="60" font-size="7" fill="#00BDF2" font-weight="600">--> Tool: kubectl logs payment-api-xyz</text>
+
+    <path d="M 307 40 L 320 40" stroke="#003B70" stroke-width="1" marker-end="url(#a4)"/>
+
+    <!-- Turn 2 -->
+    <rect x="323" y="10" width="155" height="55" rx="4" fill="white" stroke="#003B70"/>
+    <text x="400" y="25" text-anchor="middle" font-size="7.5" fill="#003B70" font-weight="700">Turn 2: Agent Reasons</text>
+    <text x="333" y="38" font-size="7" fill="#4A5568">"Memory spiking at startup -- was there</text>
+    <text x="333" y="49" font-size="7" fill="#4A5568"> a recent deployment?"</text>
+    <text x="333" y="60" font-size="7" fill="#00BDF2" font-weight="600">--> Tool: kubectl rollout history</text>
+
+    <path d="M 480 40 L 493 40" stroke="#003B70" stroke-width="1" marker-end="url(#a4)"/>
+
+    <!-- Turn 3 -->
+    <rect x="496" y="10" width="155" height="55" rx="4" fill="white" stroke="#003B70"/>
+    <text x="573" y="25" text-anchor="middle" font-size="7.5" fill="#003B70" font-weight="700">Turn 3: Agent Reasons</text>
+    <text x="506" y="38" font-size="7" fill="#4A5568">"Rev 5 deployed 30min ago -- confirm</text>
+    <text x="506" y="49" font-size="7" fill="#4A5568"> memory 2x since then"</text>
+    <text x="506" y="60" font-size="7" fill="#00BDF2" font-weight="600">--> Tool: prometheus_query(mem)</text>
+
+    <path d="M 653 40 L 666 40" stroke="#003B70" stroke-width="1" marker-end="url(#a4)"/>
+
+    <!-- RCA Submit -->
+    <rect x="669" y="10" width="130" height="55" rx="4" fill="#10B981" stroke="#059669"/>
+    <text x="734" y="25" text-anchor="middle" font-size="7.5" fill="white" font-weight="700">RCA Complete</text>
+    <text x="679" y="38" font-size="7" fill="white">"OOM from memory leak</text>
+    <text x="679" y="49" font-size="7" fill="white"> in revision 5"</text>
+    <text x="679" y="60" font-size="7" fill="white" font-weight="600">Confidence: 0.94</text>
+
+    <!-- Phase 2 row -->
+    <rect x="150" y="80" width="180" height="50" rx="4" fill="white" stroke="#00BDF2"/>
+    <text x="240" y="95" text-anchor="middle" font-size="7.5" fill="#00BDF2" font-weight="700">Phase 2: Workflow Discovery</text>
+    <text x="160" y="108" font-size="7" fill="#4A5568">Agent searches catalog: "rollback deployment"</text>
+    <text x="160" y="120" font-size="7" fill="#00BDF2" font-weight="600">--> Tool: list_workflows(kind=Deployment, action=rollback)</text>
+
+    <path d="M 332 105 L 345 105" stroke="#00BDF2" stroke-width="1" marker-end="url(#a4)"/>
+
+    <rect x="348" y="80" width="180" height="50" rx="4" fill="white" stroke="#00BDF2"/>
+    <text x="438" y="95" text-anchor="middle" font-size="7.5" fill="#00BDF2" font-weight="700">Schema Validation + Self-Correct</text>
+    <text x="358" y="108" font-size="7" fill="#4A5568">Validates params against workflow schema</text>
+    <text x="358" y="120" font-size="7" fill="#4A5568">Up to 3 attempts if validation fails</text>
+
+    <path d="M 530 105 L 543 105" stroke="#00BDF2" stroke-width="1" marker-end="url(#a4)"/>
+
+    <rect x="546" y="80" width="150" height="50" rx="4" fill="#003B70"/>
+    <text x="621" y="98" text-anchor="middle" font-size="7.5" fill="white" font-weight="700">Final Recommendation</text>
+    <text x="556" y="112" font-size="7" fill="#B0C4DE">workflow: rollback-deployment-v2</text>
+    <text x="556" y="124" font-size="7" fill="#B0C4DE">params: {REVISION: "4"}</text>
+
+    <!-- Shadow Agent -->
+    <rect x="150" y="145" width="545" height="55" rx="4" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1"/>
+    <text x="422" y="162" text-anchor="middle" font-size="8.5" fill="#92400E" font-weight="700">SHADOW AGENT (Parallel Alignment Observer)</text>
+    <text x="160" y="177" font-size="7.5" fill="#78350F">Evaluates EVERY agent step independently: LLM responses + tool calls + tool results</text>
+    <text x="160" y="190" font-size="7.5" fill="#78350F">Verdict: Clean or Suspicious | Circuit breaker: terminates investigation on detection | Fail-closed: errors = suspicious</text>
+
+    <!-- Arrow from main to shadow -->
+    <path d="M 400 133 L 400 143" stroke="#F59E0B" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#a4)"/>
+    <text x="410" y="140" font-size="6" fill="#F59E0B">every step monitored</text>
+</svg>
+</div>
+
+<div class="two-col" style="font-size: 0.46em; margin-top: 5px;">
+    <div style="text-align:left;">
+        <strong style="color:var(--navy);">Phase 1 - RCA Tool Registry</strong><br>
+        <code>get_pod_status</code>, <code>get_pod_logs</code>, <code>describe_resource</code>, <code>get_events</code>, <code>get_node_metrics</code>, <code>prometheus_query</code>, <code>alertmanager_query</code>, <code>fleet_mcp_tools</code> (remote clusters)
+    </div>
+    <div style="text-align:left;">
+        <strong style="color:var(--navy);">Phase 2 - Catalog Tools</strong><br>
+        <code>list_available_actions</code>, <code>list_workflows</code>, <code>get_workflow</code> (schema + OCI bundle)<br>
+        <strong style="color:var(--navy); margin-top:3px; display:block;">Key:</strong> This is an AGENT, not a prompt. It autonomously decides what to investigate, how deep to go, and when it has enough confidence to act.
+    </div>
+</div>
+
+<aside class="notes">
+<h3>SPEAKER NOTES -- Slide 4 (13:30 - 18:30)</h3>
+<p><strong>Opening:</strong> "This is what makes Kubernaut fundamentally different from other AIOps tools. It's not just calling an LLM with a prompt -- it's running an autonomous agent that investigates like your best SRE."</p>
+
+<p><strong>The key framing:</strong> "Think about what an SRE does when they get an OOM alert. They don't just look at one thing. They REASON: 'It's OOMKilled, so let me check memory usage. Memory is spiking at startup -- was there a recent deploy? Yes, revision 5 deployed 30 minutes ago. Memory doubled since then. Root cause: memory leak in rev 5.' That's exactly what this agent does -- but in 10-15 seconds instead of 20 minutes."</p>
+
+<p><strong>Walk the diagram:</strong></p>
+<ul>
+<li>"Turn 1: Agent receives the signal context plus pre-enriched data (owner chain, namespace labels, remediation history). It REASONS -- 'OOMKilled, I need pod logs and memory metrics' -- and calls the kubectl tool."</li>
+<li>"Turn 2: Agent sees memory spiking at startup. It REASONS -- 'recent deploy?' -- and checks rollout history."</li>
+<li>"Turn 3: Agent confirms rev 5 is the culprit via Prometheus. Confidence: 94%. Submits RCA."</li>
+<li>"Phase 2: Agent searches the workflow catalog for 'rollback deployment', validates parameters against the workflow schema (up to 3 attempts if validation fails), and submits the final recommendation."</li>
+</ul>
+
+<p><strong>Shadow Agent:</strong> "The entire time, a separate shadow agent is watching every step. Every LLM response, every tool call, every tool result -- evaluated for prompt injection or suspicious behavior. If something looks wrong, circuit breaker fires and the whole investigation terminates. Fail-closed, not fail-open."</p>
+
+<p><strong>Differentiator (the line to memorize):</strong> "This is an AGENT, not a prompt. It has agency. It decides what to investigate, how deep to go, and when it has enough confidence to recommend action. That's the difference between GitHub Copilot suggesting code and an autonomous SRE conducting an investigation."</p>
+
+<p><strong>If asked "what LLM?":</strong> "Supports OpenAI, Anthropic Claude, Google Gemini, or locally-hosted models via Ollama. In air-gapped environments, the LLM runs on your infrastructure -- no data leaves the cluster."</p>
+
+<p><strong>Timing:</strong> 5 minutes. This is the wow factor slide. Take your time with the turn-by-turn walkthrough.</p>
+</aside>
+</section>
+
+<!-- ═══════════════ SLIDE 5: SAFETY ═══════════════ -->
 <section>
 <div class="top-bar"></div>
 <h2>Safety, Compliance, and Control</h2>
-<h3>Built for regulated environments -- SOC2/FedRAMP audit-ready, deny-by-default</h3>
+<h3>Six layers of protection -- built for regulated environments from day one</h3>
 
 <div class="safety-grid">
     <div class="safety-card">
-        <h4>Human-in-the-Loop Approval Gates</h4>
-        <p>Confidence-based: &lt;80% requires operator approval via Slack/console. Configurable per namespace, per action type. <code>RemediationApprovalRequest</code> CRD tracks decision + actor.</p>
+        <h4>1. Approval Gates</h4>
+        <p>Confidence &lt;80%: mandatory operator approval via Slack/console. RAR CRD tracks who approved, when, why. Configurable per namespace and action type.</p>
     </div>
     <div class="safety-card">
-        <h4>Immutable Audit Trail (ADR-034)</h4>
-        <p>Every event: hash-chained, timestamped, actor-attributed. Stored in PostgreSQL with 7-year retention. Full RR lifecycle reconstructable from <code>correlation_id</code> alone. SOC2 CC8.1 compliant.</p>
+        <h4>2. Immutable Audit Trail</h4>
+        <p>Hash-chained PostgreSQL events (ADR-034). Full lifecycle reconstructable from correlation_id. 7-year retention. SOC2 CC8.1, FedRAMP AU-2/AU-9 mapped.</p>
     </div>
     <div class="safety-card">
-        <h4>Scope Management (deny-by-default)</h4>
-        <p>Only namespaces labeled <code>kubernaut.ai/managed=true</code> are visible. Resources without label are rejected at Gateway. Multi-cluster: per-cluster scope via fleet registry.</p>
+        <h4>3. Scope: Deny-by-Default</h4>
+        <p><code>kubernaut.ai/managed=true</code> label required. Unmanaged namespaces invisible at Gateway. Fleet: per-cluster scope via registry.</p>
     </div>
     <div class="safety-card">
-        <h4>Shadow Agent Alignment (ADR-KA-001)</h4>
-        <p>Independent LLM evaluates every investigation step for prompt injection or anomalous behavior. Fail-closed: circuit breaker terminates investigation on suspicious verdict.</p>
+        <h4>4. Shadow Agent Guard</h4>
+        <p>Independent LLM evaluates every investigation step. Prompt injection detection. Circuit breaker: terminates on suspicious verdict. Fail-closed design.</p>
     </div>
     <div class="safety-card">
-        <h4>Consecutive Failure Protection</h4>
-        <p>After 3 failed remediations on same target: phase transitions to <code>Blocked</code>, 1-hour cooldown, escalation notification. Exponential backoff: 1m, 2m, 4m, 8m, 10m cap.</p>
+        <h4>5. Failure Protection</h4>
+        <p>3 consecutive failures: Blocked phase + 1h cooldown + escalation notification. Exponential backoff: 1m/2m/4m/8m/10m cap. Resource locking prevents parallel conflicts.</p>
     </div>
     <div class="safety-card">
-        <h4>Effectiveness Verification</h4>
-        <p>Post-execution: checks alert resolution, pod health, Prometheus metrics, spec hash drift. Scores effectiveness 0-100. Inconclusive outcomes trigger exponential backoff on retry.</p>
+        <h4>6. Effectiveness Verification</h4>
+        <p>Post-execution: alert resolution + pod health + Prometheus metrics + spec hash drift. Scores 0-100. Inconclusive: backoff + escalate. Never marks "done" prematurely.</p>
     </div>
 </div>
 
-<div style="font-size: 0.48em; color: var(--citi-gray); text-align: center; margin-top: 8px;">
-    <strong style="color: var(--citi-navy);">Compliance mapping:</strong> SOC2 CC8.1 (audit completeness) | CC6.1 (financial governance) | CC7.2 (decision trails) | FedRAMP AU-2/AU-3 (event content) | AU-9 (protection) | AU-11 (retention) | AC-6 (least privilege)
+<div style="font-size: 0.44em; color: var(--gray); text-align: center; margin-top: 5px;">
+    <strong style="color: var(--navy);">Compliance Controls:</strong> SOC2 CC8.1 (completeness) | CC6.1 (governance) | CC7.2 (decision trails) | FedRAMP AU-2 (events) | AU-3 (content) | AU-9 (immutability) | AU-11 (retention) | AC-6 (least privilege) | SI-10 (input validation)
 </div>
 
 <aside class="notes">
-<h3>SPEAKER NOTES -- Slide 4 (18:00 - 24:00)</h3>
-<p><strong>Opening:</strong> "Safety isn't an afterthought in Kubernaut -- it's the architecture. Let me walk through six layers of protection."</p>
-
-<p><strong>Approval gates:</strong> "Like a pull request for infrastructure. The AI proposes, humans approve. The threshold is configurable -- you might set 90% for production and 70% for dev. Below threshold: mandatory approval via Slack. Above: auto-execute for low-risk actions. The RemediationApprovalRequest CRD records WHO approved, WHEN, and WHY."</p>
-
-<p><strong>Audit trail:</strong> "This is critical for compliance. Every action produces an immutable event in PostgreSQL. Events are hash-chained -- tamper with one and the chain breaks. Given a correlation_id, you can reconstruct the ENTIRE remediation lifecycle: what alert fired, what the AI investigated, what it decided, who approved, what executed, what the outcome was. This maps to SOC2 CC8.1 directly."</p>
-
-<p><strong>Scope:</strong> "Deny-by-default. If a namespace doesn't have the managed label, Kubernaut can't see it. Period. Gateway rejects signals from unmanaged namespaces at the front door. For multi-cluster: each managed cluster is registered separately."</p>
-
-<p><strong>Shadow agent:</strong> "This is unique. A second, independent LLM watches the primary agent's investigation. It evaluates every LLM response and every tool call for signs of prompt injection or anomalous behavior. If it flags something suspicious, a circuit breaker terminates the investigation immediately. Fail-closed -- not fail-open."</p>
-
-<p><strong>Consecutive failures:</strong> "If the same issue fails remediation 3 times, Kubernaut stops. It transitions to Blocked, applies a 1-hour cooldown, and pages a human. It won't thrash your cluster."</p>
-
-<p><strong>Verification:</strong> "Every remediation is verified. The Effectiveness Monitor checks: did the alert resolve? Are pods healthy? Are latency metrics back to normal? It produces a 0-100 effectiveness score. If the score is low or the alert is still firing, it marks the outcome as Inconclusive and applies exponential backoff before the next attempt."</p>
-
-<p><strong>Compliance line at bottom:</strong> "For anyone dealing with auditors -- every control listed there has a direct mapping in the codebase. AU-2 event generation, AU-3 event content, AU-9 immutability, AU-11 retention. The audit table design was built against these controls from day one."</p>
-
-<p><strong>Timing:</strong> This is the trust-building slide. Spend time here. Transition around 24 min.</p>
+<h3>SPEAKER NOTES -- Slide 5 (18:30 - 22:30)</h3>
+<p><strong>Opening:</strong> "The first question everyone asks: 'Will it break production?' Six layers say no."</p>
+<p><strong>Speed through each card (they're self-explanatory on screen):</strong></p>
+<ul>
+<li>"Approval gates -- like a PR for infrastructure. AI proposes, human approves."</li>
+<li>"Audit trail -- immutable, hash-chained, 7-year retention. Auditors love it."</li>
+<li>"Scope -- deny-by-default. No label, no access."</li>
+<li>"Shadow agent -- watching the watcher. Prompt injection defense."</li>
+<li>"Failure protection -- 3 strikes and it stops. Won't thrash your cluster."</li>
+<li>"Verification -- doesn't just 'fire and forget.' Confirms the fix worked."</li>
+</ul>
+<p><strong>The money line:</strong> "Control remains with your team. Kubernaut works FOR operators, not instead of them."</p>
+<p><strong>Timing:</strong> 4 minutes. The cards are dense -- don't read them aloud, just hit the highlights.</p>
 </aside>
 </section>
 
-<!-- ═══════════════ SLIDE 5: Impact + Next Steps ═══════════════ -->
+<!-- ═══════════════ SLIDE 6: DAY IN THE LIFE ═══════════════ -->
+<section>
+<div class="top-bar"></div>
+<h2>Day in the Life: What Operators See</h2>
+<h3>Real-world operator experience -- from alert to verified resolution</h3>
+
+<div class="three-col" style="margin-top: 8px;">
+    <!-- Slack mockup -->
+    <div>
+        <div style="font-size: 0.46em; color: var(--navy); font-weight: 700; margin-bottom: 4px;">Slack Notification (approval request)</div>
+        <div class="mock-slack">
+            <span class="bot-name">Kubernaut</span> <span style="font-size: 0.8em; color: #94A3B8;">APP  10:42 AM</span>
+            <div class="msg" style="margin-top: 6px; border-left: 3px solid var(--sky); padding-left: 8px;">
+                <strong>Remediation Proposal</strong><br>
+                Alert: <code>OOMKilled</code> on <strong>payment-api</strong> (production)<br>
+                Root Cause: Memory leak in revision 5 (deployed 30m ago)<br>
+                Proposed Action: <strong>Rollback to revision 4</strong><br>
+                Confidence: <strong style="color: var(--green);">92%</strong><br>
+                <div style="margin-top: 6px;">
+                    <span class="btn btn-approve">Approve</span>
+                    <span class="btn btn-reject">Reject</span>
+                    <span class="btn btn-reject">Details</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terminal mockup -->
+    <div>
+        <div style="font-size: 0.46em; color: var(--navy); font-weight: 700; margin-bottom: 4px;">Terminal: oc get rr --watch</div>
+        <div class="mock-terminal">
+<span style="color:#94A3B8;">$ oc get rr -w -n kubernaut-system</span>
+<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  Pending      -         10s
+<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  Processing   -         12s
+<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  Analyzing    -         14s
+<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  AwaitAppr    -         26s
+<span style="color:#6EE7B7;">rr-a1b2..8k2m</span>  Executing    -         31s
+<span style="color:#6EE7B7;">rr-a1b2..8k2m</span>  Verifying    -         55s
+<span style="color:#34D399;">rr-a1b2..8k2m</span>  <span style="color:#34D399;">Completed</span>  Remediated  62s
+        </div>
+    </div>
+
+    <!-- Metrics mockup -->
+    <div>
+        <div style="font-size: 0.46em; color: var(--navy); font-weight: 700; margin-bottom: 4px;">Metrics: Before vs After Remediation</div>
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px; padding: 8px;">
+            <svg viewBox="0 0 200 120" style="width: 100%;">
+                <!-- Axes -->
+                <line x1="25" y1="100" x2="190" y2="100" stroke="#94A3B8" stroke-width="0.5"/>
+                <line x1="25" y1="10" x2="25" y2="100" stroke="#94A3B8" stroke-width="0.5"/>
+                <text x="12" y="15" font-size="5" fill="#6B7280">2GB</text>
+                <text x="12" y="55" font-size="5" fill="#6B7280">1GB</text>
+                <text x="12" y="98" font-size="5" fill="#6B7280">0</text>
+                <!-- Memory line (before: rising, after: drops) -->
+                <polyline points="30,80 50,70 70,55 90,35 100,25 105,20" fill="none" stroke="#EF4444" stroke-width="1.5"/>
+                <!-- Remediation point -->
+                <line x1="108" y1="10" x2="108" y2="100" stroke="#00BDF2" stroke-width="0.8" stroke-dasharray="3,2"/>
+                <text x="110" y="8" font-size="4.5" fill="#00BDF2">rollback</text>
+                <!-- After remediation -->
+                <polyline points="108,20 115,50 125,70 140,78 160,80 180,80" fill="none" stroke="#10B981" stroke-width="1.5"/>
+                <!-- Labels -->
+                <text x="55" y="110" font-size="5" fill="#EF4444">Memory leak (rev 5)</text>
+                <text x="135" y="110" font-size="5" fill="#10B981">Stable (rev 4)</text>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<div style="font-size: 0.46em; color: var(--gray); text-align: center; margin-top: 8px;">
+    <strong style="color: var(--navy);">Total time: 62 seconds</strong> from alert to verified resolution | Operator involvement: one Slack button click | Full audit trail auto-generated
+</div>
+
+<aside class="notes">
+<h3>SPEAKER NOTES -- Slide 6 (22:30 - 25:30)</h3>
+<p><strong>Opening:</strong> "Let me show you what this looks like for your operators day-to-day. Three views of the same remediation."</p>
+
+<p><strong>Left panel (Slack):</strong> "This is what arrives in your Slack channel. Clear, concise: what's wrong, what the AI found, what it wants to do, and how confident it is. One click to approve or reject. No runbook reading, no investigation -- that's already done."</p>
+
+<p><strong>Middle panel (Terminal):</strong> "For the operators who live in the terminal -- 'oc get rr --watch'. You see the phases ticking through in real time. Pending, Processing, Analyzing, AwaitingApproval, Executing, Verifying, Completed. 62 seconds end-to-end."</p>
+
+<p><strong>Right panel (Metrics):</strong> "And here's the proof it worked. Memory was climbing (the leak), remediation fires at the dashed blue line (rollback), and memory drops back to stable baseline. The Effectiveness Monitor sees this, confirms alert resolved, marks Completed."</p>
+
+<p><strong>The punchline:</strong> "62 seconds. From alert to verified fix. One Slack button click from the operator. Full audit trail auto-generated. Compare that to the 47-minute manual process we showed on slide 1."</p>
+
+<p><strong>Timing:</strong> 3 minutes. Let the visuals speak. Point to each panel as you describe it.</p>
+</aside>
+</section>
+
+<!-- ═══════════════ SLIDE 7: IMPACT + NEXT STEPS ═══════════════ -->
 <section>
 <div class="top-bar"></div>
 <h2>Impact and Next Steps</h2>
 <h3>Measurable outcomes + low-risk pilot proposal</h3>
 
 <div class="impact-row">
-    <div class="impact-card"><span class="val">40-60%</span><span class="desc">MTTR Reduction<br>(investigation in seconds, not minutes)</span></div>
-    <div class="impact-card"><span class="val">95%+</span><span class="desc">Execution Success<br>(pre-validated workflows, not ad-hoc)</span></div>
-    <div class="impact-card"><span class="val">99.9%</span><span class="desc">Audit Compliance<br>(zero manual documentation)</span></div>
-    <div class="impact-card"><span class="val">70%</span><span class="desc">Page Reduction<br>(repetitive alerts auto-handled)</span></div>
+    <div class="impact-card"><span class="val">95%</span><span class="desc">MTTR Reduction<br>(47 min -> ~2.5 min)</span></div>
+    <div class="impact-card"><span class="val">95%+</span><span class="desc">Execution Success<br>(schema-validated workflows)</span></div>
+    <div class="impact-card"><span class="val">99.9%</span><span class="desc">Audit Coverage<br>(zero manual docs)</span></div>
+    <div class="impact-card"><span class="val">70%</span><span class="desc">Page Reduction<br>(repetitive auto-handled)</span></div>
 </div>
 
-<div class="two-col" style="margin-top: 12px; font-size: 0.5em;">
+<div class="two-col" style="margin-top: 8px; font-size: 0.48em;">
     <div style="text-align: left;">
-        <strong style="color: var(--citi-navy);">Operational Transformation</strong>
-        <ul style="margin: 4px 0; padding-left: 14px; line-height: 1.7;">
-            <li>SREs shift from firefighting to reliability engineering</li>
-            <li>Tribal knowledge codified as executable workflows in Git</li>
-            <li>Consistent remediation quality regardless of time/person</li>
-            <li>Multi-cluster: single pane across all managed OCP clusters</li>
-            <li>Observation mode available: investigate + recommend only</li>
+        <strong style="color: var(--navy);">Operational Transformation</strong>
+        <ul style="margin: 3px 0; padding-left: 14px; line-height: 1.7;">
+            <li>SREs: firefighters -> reliability architects</li>
+            <li>Tribal knowledge -> executable, versioned workflows in Git</li>
+            <li>Consistent quality: 3am = 3pm (no fatigue factor)</li>
+            <li>Multi-cluster: single pane across all OCP fleet</li>
+            <li>Observation mode: investigate-only until you trust it</li>
         </ul>
     </div>
     <div>
@@ -477,9 +689,10 @@
             <h4>Proposed Pilot (Zero Production Risk)</h4>
             <p>
                 1. Deploy to 2-3 <strong>non-prod namespaces</strong> (dev/staging)<br>
-                2. Codify <strong>top 5 alert patterns</strong> as workflows (OOM, CrashLoop, rollback, scale, disk)<br>
-                3. Run <strong>30-day POC</strong> in observation + approval-required mode<br>
-                4. Measure: MTTR delta, page count, operator satisfaction<br>
+                2. Codify <strong>top 5 alert patterns</strong> as workflows<br>
+                &nbsp;&nbsp;&nbsp;(OOM, CrashLoop, rollback, scale, disk)<br>
+                3. Run <strong>30-day POC</strong>: observation + approval-required<br>
+                4. Measure: MTTR, pages saved, operator satisfaction<br>
                 5. <strong>Data-driven decision</strong> on production rollout
             </p>
         </div>
@@ -487,40 +700,24 @@
 </div>
 
 <aside class="notes">
-<h3>SPEAKER NOTES -- Slide 5 (24:00 - 30:00)</h3>
-<p><strong>Opening:</strong> "Let me put numbers on the business case, and then propose a concrete, low-risk path forward."</p>
-
-<p><strong>Metrics:</strong></p>
+<h3>SPEAKER NOTES -- Slide 7 (25:30 - 28:00)</h3>
+<p><strong>Opening:</strong> "Numbers on the business case, then a concrete path forward."</p>
 <ul>
-<li>"40-60% MTTR reduction -- most of that is investigation time. The AI does in 10 seconds what takes a human 20 minutes. The fix itself is the same speed."</li>
-<li>"95%+ success rate -- because workflows are pre-tested, schema-validated, and version-controlled. Not someone typing kubectl at 3am."</li>
-<li>"99.9% audit compliance -- every remediation auto-generates a full audit trail. No manual change management tickets."</li>
-<li>"70% page reduction -- that's the repetitive 70% of alerts that have known fixes. Your on-call only gets paged for novel issues."</li>
+<li>"95% MTTR reduction -- 47 minutes to 2.5 minutes. Most of that is investigation time eliminated."</li>
+<li>"95%+ execution success -- pre-validated workflows, not ad-hoc commands at 3am."</li>
+<li>"99.9% audit coverage -- zero manual change tickets. Every action auto-documented."</li>
+<li>"70% fewer pages -- the repetitive alerts handled automatically."</li>
 </ul>
-
-<p><strong>The cultural shift:</strong> "Your best engineers stop being the people who restart pods fastest. They become the people who DESIGN the remediation workflows, DEFINE the policies, IMPROVE the system. That's reliability engineering, not firefighting."</p>
-
-<p><strong>The ask -- present confidently:</strong></p>
+<p><strong>The ask:</strong> "2-3 non-prod namespaces. Top 5 alert patterns. 30 days in observation + approval mode. Then we look at the data together and decide."</p>
+<p><strong>Closing:</strong> "Kubernaut doesn't ask for trust. It asks for a test. The upside: 95% faster resolution. The downside: a controlled 30-day pilot in non-prod. I'd love to hear your thoughts."</p>
+<p><strong>Q&A (leave 2 min):</strong></p>
 <ul>
-<li>"Here's what I propose. We pick 2-3 non-production namespaces. Zero risk."</li>
-<li>"We take our top 5 most common alerts -- the ones that page people every week -- and codify them as workflows."</li>
-<li>"We run for 30 days in observation + approval mode. It investigates, it recommends, but it doesn't execute without approval."</li>
-<li>"After 30 days, we look at the data: how much faster were we? How many pages did it save? What did operators think?"</li>
-<li>"Then we make a data-driven decision on whether to expand."</li>
+<li><strong>"AI wrong?"</strong> -- Approval gates. Worst case: proposes wrong thing, human says no.</li>
+<li><strong>"Data leaving network?"</strong> -- Local LLM (Ollama). Air-gap ready.</li>
+<li><strong>"Cost?"</strong> -- 12 pods + PG. LLM: $50-200/mo cloud or free local.</li>
+<li><strong>"Who writes workflows?"</strong> -- Your team. Git-versioned. Kubernaut executes.</li>
+<li><strong>"Observation only?"</strong> -- Yes. Threshold=100% = nothing auto-executes.</li>
 </ul>
-
-<p><strong>Closing:</strong> "Kubernaut doesn't ask us to trust it blindly. It asks us to test it, measure it, and decide based on evidence. The upside is significant. The downside is a 30-day pilot in non-prod. I'd love to hear your thoughts."</p>
-
-<p><strong>Q&A objections:</strong></p>
-<ul>
-<li><strong>"What if AI is wrong?"</strong> -- Approval gates prevent execution. Worst case: it proposes something wrong and a human says no.</li>
-<li><strong>"Data leaving network?"</strong> -- Supports local LLMs (Ollama). Air-gap ready. No external calls required.</li>
-<li><strong>"Cost?"</strong> -- 12 containers + PostgreSQL. LLM is variable: $50-200/mo at moderate volume with cloud providers, or infrastructure-only cost with local models.</li>
-<li><strong>"Who writes workflows?"</strong> -- Your team. Git-versioned, schema-validated. Kubernaut executes; engineers author.</li>
-<li><strong>"Observation only?"</strong> -- Yes. Set approval threshold to 100% = nothing auto-executes. Pure copilot mode.</li>
-</ul>
-
-<p><strong>Timing:</strong> Finish by 27 min. Leave 3 min for questions.</p>
 </aside>
 </section>
 
