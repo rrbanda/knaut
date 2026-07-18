@@ -45,50 +45,154 @@ Role-Based Access Control -- security rules that control who (or what) can do wh
 
 ## The Architecture: What Each Piece Does
 
-Think of Kubernaut like a hospital emergency room:
+### The Operator Layer (Kubernetes-Native Controllers)
 
-| Kubernaut Component | Hospital Analogy | What It Actually Does |
-|---------------------|------------------|----------------------|
-| **Gateway** | Front desk / Triage | Receives alerts, removes duplicates, creates a "case file" |
-| **Signal Processing** | Lab work | Gathers context -- what namespace, what deployment, how critical |
-| **Remediation Orchestrator** | Attending physician | Coordinates the whole process, decides what happens next |
-| **AI Analysis (Kubernaut Agent)** | Diagnostic specialist | Investigates the problem -- reads logs, checks metrics, identifies root cause |
-| **Workflow Execution** | Surgical team | Executes the approved fix (rollback, restart, scale up) |
-| **Effectiveness Monitor** | Post-op check | Verifies the patient (service) is actually healthy after treatment |
-| **Notification Controller** | Paging system | Sends approval requests and status updates to the team |
-| **Data Storage** | Medical records | Keeps immutable records of everything that happened (audit trail) |
+Kubernaut is a **Kubernetes operator** -- the same pattern Red Hat uses to build OpenShift itself. It extends OpenShift with Custom Resource Definitions (CRDs) that represent remediation state.
 
-### How They Work Together (The Flow)
+**What "operator" means in practice:**
+- It watches for changes to custom resources (like RemediationRequest)
+- When a resource changes, the operator "reconciles" it -- makes the actual state match the desired state
+- This is the same pattern that makes a Deployment controller restart pods when they crash
+- Kubernaut has 5 separate operator controllers, each watching its own CRD
+
+**The 5 CRD Controllers:**
+
+| Controller | CRD it watches | What it does on reconcile |
+|------------|---------------|--------------------------|
+| Signal Processing | `SignalProcessing` | Enriches alert with K8s context (what namespace, what deployment, owner chain). Runs Rego policies to classify environment (prod/staging) and priority (P0-P3). |
+| AI Analysis | `AIAnalysis` | Calls the Kubernaut Agent HTTP API to investigate. Polls for results. Records selected workflow. |
+| Workflow Execution | `WorkflowExecution` | Creates a Tekton PipelineRun (or K8s Job or Ansible playbook) from the workflow catalog. Watches for completion/failure. |
+| Effectiveness Monitor | `EffectivenessAssessment` | After fix executes, checks: is alert resolved? Are pods healthy? Are Prometheus metrics back to normal? Scores 0-100. |
+| Notification | `NotificationRequest` | Sends messages to Slack, PagerDuty, Teams, email. Handles approval request delivery and retry. |
+
+**The Orchestrator (the "conductor"):**
+- Watches the main `RemediationRequest` CRD
+- Creates child CRDs in sequence: SP -> AIA -> WFE -> EA
+- Implements a phase state machine: Pending -> Processing -> Analyzing -> Executing -> Verifying -> Completed
+- Handles timeouts (global: 1 hour, per-phase: 5-30 min configurable)
+- Handles blocking conditions (resource already being remediated, backoff from failures)
+- If any child fails, orchestrator decides: retry? escalate? timeout?
+
+### The Agent Layer (LLM-Powered Investigation)
+
+The Kubernaut Agent is the AI brain. It's a stateless HTTP service that receives investigation requests and runs a multi-turn LLM conversation.
+
+**How the Agent investigates (like your best SRE):**
 
 ```
-Alert fires (Prometheus/OpenShift Events)
+REQUEST ARRIVES: "CrashLoopBackOff on payment-api pod in production"
     |
     v
-Gateway receives it, checks "are we already working on this?"
+PRE-ENRICHMENT: Agent gathers context BEFORE calling the LLM
+  - Resolves owner chain: Pod -> ReplicaSet -> Deployment
+  - Checks for GitOps labels (ArgoCD, Flux)
+  - Queries DataStorage for remediation history on this target
+  - Detects: HPA present? PDB present? StatefulSet?
     |
     v
-Signal Processing enriches: "This is production, P0 priority, Deployment/payment-api"
+PHASE 1 - ROOT CAUSE ANALYSIS (multi-turn LLM loop):
+  Turn 1: LLM reads alert context, decides: "I need to check pod logs"
+    -> Tool call: kubectl logs payment-api-xyz
+    -> Result: "OOMKilled, memory usage spiking at startup"
+  Turn 2: LLM decides: "Was there a recent deployment?"
+    -> Tool call: kubectl rollout history deployment/payment-api
+    -> Result: "Revision 5 deployed 30 min ago by user@company.com"
+  Turn 3: LLM decides: "Let me check memory metrics"
+    -> Tool call: prometheus query (container_memory_usage)
+    -> Result: "Memory 2x higher since revision 5"
+  Turn 4: LLM concludes: "OOM caused by memory leak in rev 5"
+    -> Submits RCA: root_cause="memory leak in revision 5"
     |
     v
-Remediation Orchestrator creates an AI Analysis request
+PHASE 2 - WORKFLOW SELECTION:
+  Turn 1: LLM searches workflow catalog
+    -> Tool call: list_available_actions (filter: Deployment, rollback)
+    -> Result: "rollback-deployment-v2 (confidence: 92%)"
+  Turn 2: LLM validates parameters
+    -> Tool call: get_workflow (rollback-deployment-v2)
+    -> Result: schema requires TARGET_NAMESPACE, TARGET_NAME, REVISION
+  Turn 3: LLM selects and submits
+    -> submit_result_with_workflow: rollback-deployment-v2, params filled
     |
     v
-Kubernaut Agent (AI) investigates: reads logs, checks metrics, identifies root cause
+RESULT: workflow_id=rollback-deployment-v2, confidence=0.92, revision=4
+```
+
+**Key Agent features to explain:**
+- **Tool registry:** The LLM doesn't have free access to the cluster. It can only use registered tools (kubectl get/describe/logs, Prometheus queries, AlertManager silence). Each tool call is logged.
+- **Shadow agent:** A SECOND LLM watches every step of the investigation for suspicious behavior (prompt injection defense). If it flags something, the whole investigation stops (fail-closed).
+- **MCP Interactive mode:** An operator can "take over" an investigation mid-flight, ask the AI additional questions, steer the investigation, then hand back for workflow selection. Like pair-programming with the AI.
+- **Multi-provider LLM:** Supports OpenAI, Anthropic Claude, Google Gemini, or locally-hosted models (Ollama). Air-gap compatible.
+
+### How They Work Together (The Full Flow)
+
+```
+Alert fires (Prometheus AlertManager / OpenShift Events)
     |
     v
-AI selects a workflow: "rollback to revision 3" (confidence: 87%)
+GATEWAY: Receives webhook, computes fingerprint (SHA256 of owner+namespace+kind)
+  - Checks: is there already an active RR for this fingerprint?
+  - If yes: increment occurrence counter, return 202 (deduplicated)
+  - If no: create RemediationRequest CRD in kubernaut-system namespace
     |
     v
-[If production] --> Slack notification: "Approve this rollback?" --> Operator approves
+ORCHESTRATOR: Reconciles new RR, checks routing conditions
+  - Is this namespace managed? (label check, deny-by-default)
+  - Is there a backoff window from previous failures?
+  - Is another WFE running on same target? (resource lock)
+  - All clear: creates SignalProcessing CRD -> phase = Processing
     |
     v
-Workflow Execution runs the rollback via Tekton
+SIGNAL PROCESSING: Reconciles SP CRD
+  - Enriches: fetches namespace labels, deployment spec, owner chain
+  - Classifies: runs Rego policy -> environment=Production, priority=P0
+  - Categorizes: signal mode (reactive/proactive), normalized severity
+  - Completes: updates SP status -> Orchestrator watches, sees completion
     |
     v
-Effectiveness Monitor checks: pods healthy? Alert gone? Metrics normal?
+ORCHESTRATOR: SP complete, creates AIAnalysis CRD -> phase = Analyzing
     |
     v
-DONE - full audit trail recorded
+AI ANALYSIS CONTROLLER: Reconciles AIA CRD
+  - Submits investigation to Kubernaut Agent HTTP API (async: 202 + session_id)
+  - Polls for result (15s interval)
+  - Agent runs RCA + workflow selection (10-30 seconds)
+  - Result arrives: workflow_id, confidence, parameters
+  - Updates AIA status with selectedWorkflow
+    |
+    v
+ORCHESTRATOR: AIA complete, checks confidence
+  - Confidence >= 80% (configurable): creates WorkflowExecution CRD
+  - Confidence < 80%: creates RemediationApprovalRequest + Notification
+    -> Slack: "Approve rollback of payment-api? Confidence: 75%"
+    -> Operator clicks approve
+    -> THEN creates WorkflowExecution CRD -> phase = Executing
+    |
+    v
+WORKFLOW EXECUTION: Reconciles WFE CRD
+  - Looks up workflow in DataStorage catalog (OCI bundle reference)
+  - Creates Tekton PipelineRun (or K8s Job) with parameters
+  - Watches PipelineRun status until completion/failure
+  - Records execution time, exit codes, output
+    |
+    v
+ORCHESTRATOR: WFE complete -> phase = Verifying
+  - Creates EffectivenessAssessment CRD
+    |
+    v
+EFFECTIVENESS MONITOR: Reconciles EA CRD
+  - Waits stabilization window (30s configurable)
+  - Checks: alert still firing? -> AlertManager query
+  - Checks: pods healthy? -> K8s pod status
+  - Checks: metrics improved? -> Prometheus pre/post comparison
+  - Checks: spec hash changed? -> drift detection
+  - Produces effectiveness score (0-100)
+    |
+    v
+ORCHESTRATOR: EA terminal -> phase = Completed
+  - Creates completion Notification CRD
+  - Records final audit events
+  - Sets retention expiry (24h default, then CRD garbage collected)
 ```
 
 ---
