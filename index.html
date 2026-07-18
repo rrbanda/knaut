@@ -308,11 +308,13 @@
                 </aside>
             </section>
 
-            <!-- SLIDE 3: How It Works on OpenShift -->
+            <!-- SLIDE 3: How It Works on OpenShift (vertical stack) -->
             <section>
+              <!-- 3a: Pipeline Overview -->
+              <section>
                 <div class="top-bar"></div>
                 <h2>How It Works on OpenShift</h2>
-                <h3>Kubernetes-Native, CRD-Driven Pipeline</h3>
+                <h3>End-to-End Remediation Pipeline</h3>
 
                 <div class="flow-diagram">
                     <div class="flow-step">Alert Fires<br><small>Prometheus / OCP Events</small></div>
@@ -328,26 +330,11 @@
                     <div class="flow-step" style="background: #28A745;">Verified<br><small>Effectiveness Check</small></div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.68em; max-width: 750px; margin: 0 auto;">
-                    <div style="text-align: left;">
-                        <strong style="color: var(--citi-navy);">OpenShift Integration</strong>
-                        <ul style="color: var(--citi-gray); margin-top: 5px;">
-                            <li>Runs as operator in <code>kubernaut-system</code> namespace</li>
-                            <li>Native CRDs -- managed via <code>oc get remediationrequests</code></li>
-                            <li>OCP TLS security profiles (Modern/Intermediate)</li>
-                            <li>RBAC-aware: respects cluster roles and SCCs</li>
-                        </ul>
-                    </div>
-                    <div style="text-align: left;">
-                        <strong style="color: var(--citi-navy);">Deployment</strong>
-                        <ul style="color: var(--citi-gray); margin-top: 5px;">
-                            <li>Single Helm chart install (10 minutes)</li>
-                            <li>12 microservices, independently scalable</li>
-                            <li>Air-gap ready (OCI bundles for disconnected)</li>
-                            <li>Multi-cluster federation support</li>
-                        </ul>
-                    </div>
+                <div style="margin-top: 20px; font-size: 0.68em; color: var(--citi-gray); text-align: center;">
+                    <strong style="color: var(--citi-navy);">Real-world example:</strong> CrashLoopBackOff alert &rarr; AI investigates logs &amp; recent deploys &rarr; identifies OOM from memory leak &rarr; selects rollback workflow &rarr; operator approves via Slack &rarr; Tekton rolls back &rarr; health verified in 90 seconds
                 </div>
+
+                <p style="font-size: 0.6em; color: var(--citi-sky); margin-top: 20px; text-align: center;">&darr; Press down for detailed architecture view</p>
 
                 <aside class="notes">
                     <h3>SPEAKER NOTES -- Slide 3 (12:00 - 18:00)</h3>
@@ -357,27 +344,103 @@
                     <p><strong>Walk through the flow with a real scenario:</strong></p>
                     <ul>
                         <li>"Let's say Prometheus fires a CrashLoopBackOff alert for the payment-api pod in production."</li>
-                        <li><strong>Gateway:</strong> "The alert webhook hits Kubernaut's Gateway. It deduplicates -- if we already have an active remediation for this exact issue, it doesn't create a second one. It normalizes the alert into a standard format regardless of whether it came from Prometheus, Grafana, or a K8s event."</li>
-                        <li><strong>Signal Processing:</strong> "The signal gets enriched -- Kubernaut pulls in the namespace labels, the deployment spec, the owner chain (this pod belongs to this ReplicaSet which belongs to this Deployment). It classifies the environment as production, assigns priority P0."</li>
-                        <li><strong>AI Analysis:</strong> "Here's where the magic happens. The AI agent -- think of it as a virtual SRE -- starts investigating. It reads the pod logs, checks recent deployments, queries Prometheus for memory trends. In 10-15 seconds it identifies: 'OOM kill due to memory leak introduced in last deployment.' It selects the workflow: 'rollback to previous revision.'"</li>
-                        <li><strong>Execution:</strong> "Because this is production and confidence is 85%, it creates a remediation request. Since our policy requires approval above a threshold, a Slack notification goes to the on-call. They approve with one click. Tekton executes the rollback."</li>
-                        <li><strong>Verification:</strong> "After execution, Kubernaut waits and checks: are the pods healthy? Is the OOM alert resolved? Are latency metrics back to normal? Only when all checks pass does it mark the remediation as successful."</li>
+                        <li><strong>Gateway:</strong> "The alert webhook hits Kubernaut's Gateway. It deduplicates -- if we already have an active remediation for this exact issue, it doesn't create a second one. It normalizes the alert into a standard format."</li>
+                        <li><strong>Signal Processing:</strong> "The signal gets enriched -- Kubernaut pulls in the namespace labels, the deployment spec, the owner chain. It classifies the environment as production, assigns priority P0."</li>
+                        <li><strong>AI Analysis:</strong> "Here's where the magic happens. The AI agent starts investigating. It reads pod logs, checks recent deployments, queries Prometheus for memory trends. In 10-15 seconds it identifies: 'OOM kill due to memory leak introduced in last deployment.' It selects the workflow: 'rollback to previous revision.'"</li>
+                        <li><strong>Execution:</strong> "Because this is production and confidence is 85%, a Slack notification goes to on-call. They approve with one click. Tekton executes the rollback."</li>
+                        <li><strong>Verification:</strong> "After execution, Kubernaut checks: are pods healthy? Is the OOM alert resolved? Are latency metrics back to normal? Only when all checks pass does it mark success."</li>
                     </ul>
 
-                    <p><strong>OpenShift-specific points to emphasize:</strong></p>
+                    <p><strong>If someone asks for the detail view:</strong> Press the down arrow to show the 12-service architecture grid. Otherwise, stay on this top-level flow -- it's more digestible for a mixed audience.</p>
+
+                    <p><strong>OpenShift-specific points:</strong></p>
                     <ul>
-                        <li>"This is completely Kubernetes-native. Everything is a Custom Resource. You can watch the remediation progress with 'oc get rr' -- just like any other OpenShift resource."</li>
-                        <li>"It respects OpenShift security -- TLS profiles, SCCs, RBAC. It doesn't bypass your security model; it works within it."</li>
-                        <li>"Deployment is a single Helm chart. It runs in its own namespace and only operates on namespaces you explicitly opt in."</li>
+                        <li>"Everything is a Custom Resource. Watch progress with 'oc get rr' -- native OpenShift tooling."</li>
+                        <li>"It respects OpenShift security -- TLS profiles, SCCs, RBAC."</li>
+                        <li>"Deployment is a single Helm chart. Only operates on namespaces you explicitly opt in."</li>
                     </ul>
 
-                    <p><strong>Anticipated question -- "What about our air-gapped clusters?"</strong> Answer: "Kubernaut supports air-gap deployment. The workflow catalog uses OCI bundles that can be mirrored to an internal registry. The LLM can be a locally hosted model like Ollama -- no external API calls required."</p>
+                    <p><strong>Anticipated questions:</strong></p>
+                    <ul>
+                        <li><strong>"Air-gapped clusters?"</strong> -- "Fully supported. OCI bundles mirrored to internal registry. LLM can be local (Ollama)."</li>
+                        <li><strong>"Needs cluster-admin?"</strong> -- "No. Dedicated service accounts with minimum RBAC per service."</li>
+                        <li><strong>"What about ACM multi-cluster?"</strong> -- "Built-in fleet federation. Can remediate across managed clusters from the hub."</li>
+                    </ul>
 
-                    <p><strong>Anticipated question -- "Does it need cluster-admin?"</strong> Answer: "No. It uses dedicated service accounts with minimum required RBAC. Each service has its own scoped permissions. You can audit exactly what it has access to."</p>
-
-                    <p><strong>Timing:</strong> Transition to Slide 4 around the 18-minute mark. This is the most technical slide -- don't go deeper than the flow diagram unless someone asks.</p>
+                    <p><strong>Timing:</strong> Transition to Slide 4 around the 18-minute mark. Only show the detail sub-slide if someone asks "what are all the components?"</p>
                 </aside>
+              </section>
+
+              <!-- 3b: Detailed Architecture (vertical sub-slide) -->
+              <section>
+                <div class="top-bar"></div>
+                <h2>Architecture Detail</h2>
+                <h3>12 Microservices, CRD-Driven Orchestration</h3>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-size: 0.6em; max-width: 850px; margin: 15px auto;">
+                    <div style="background: var(--citi-light); padding: 12px; border-radius: 6px; border-left: 3px solid var(--citi-navy);">
+                        <strong style="color: var(--citi-navy);">Gateway Service</strong><br>
+                        <span style="color: var(--citi-gray);">Receives AlertManager webhooks &amp; K8s Events. Deduplicates by fingerprint. Creates RemediationRequest CRD.</span>
+                    </div>
+                    <div style="background: var(--citi-light); padding: 12px; border-radius: 6px; border-left: 3px solid var(--citi-navy);">
+                        <strong style="color: var(--citi-navy);">Signal Processing</strong><br>
+                        <span style="color: var(--citi-gray);">Enriches with K8s context (namespace, owner chain). Classifies environment &amp; priority via Rego policies.</span>
+                    </div>
+                    <div style="background: var(--citi-light); padding: 12px; border-radius: 6px; border-left: 3px solid var(--citi-navy);">
+                        <strong style="color: var(--citi-navy);">Remediation Orchestrator</strong><br>
+                        <span style="color: var(--citi-gray);">Central coordinator. Creates child CRDs in sequence. Manages timeouts, approvals, blocking conditions.</span>
+                    </div>
+                    <div style="background: var(--citi-light); padding: 12px; border-radius: 6px; border-left: 3px solid var(--citi-sky);">
+                        <strong style="color: var(--citi-navy);">AI Analysis + Kubernaut Agent</strong><br>
+                        <span style="color: var(--citi-gray);">LLM-powered investigation. Queries pods, logs, metrics. Identifies root cause. Selects workflow from catalog.</span>
+                    </div>
+                    <div style="background: var(--citi-light); padding: 12px; border-radius: 6px; border-left: 3px solid var(--citi-sky);">
+                        <strong style="color: var(--citi-navy);">Workflow Execution</strong><br>
+                        <span style="color: var(--citi-gray);">Executes via Tekton Pipelines, K8s Jobs, or Ansible. OCI-bundled workflows from curated catalog.</span>
+                    </div>
+                    <div style="background: var(--citi-light); padding: 12px; border-radius: 6px; border-left: 3px solid var(--citi-sky);">
+                        <strong style="color: var(--citi-navy);">Effectiveness Monitor</strong><br>
+                        <span style="color: var(--citi-gray);">Post-remediation health check. Compares pre/post metrics. Confirms alert resolved. Scores effectiveness.</span>
+                    </div>
+                    <div style="background: var(--citi-light); padding: 12px; border-radius: 6px; border-left: 3px solid #28A745;">
+                        <strong style="color: var(--citi-navy);">Data Storage</strong><br>
+                        <span style="color: var(--citi-gray);">PostgreSQL persistence. Immutable audit trail with hash chains. Workflow catalog. Remediation history.</span>
+                    </div>
+                    <div style="background: var(--citi-light); padding: 12px; border-radius: 6px; border-left: 3px solid #28A745;">
+                        <strong style="color: var(--citi-navy);">Notification Controller</strong><br>
+                        <span style="color: var(--citi-gray);">Multi-channel: Slack, PagerDuty, Teams, email. Alertmanager-style routing. Approval request delivery.</span>
+                    </div>
+                    <div style="background: var(--citi-light); padding: 12px; border-radius: 6px; border-left: 3px solid #28A745;">
+                        <strong style="color: var(--citi-navy);">Auth Webhook + API Frontend</strong><br>
+                        <span style="color: var(--citi-gray);">K8s admission control. MCP interactive mode. OIDC/JWT auth. Human-in-the-loop investigation UI.</span>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.63em; max-width: 750px; margin: 15px auto;">
+                    <div style="text-align: left;">
+                        <strong style="color: var(--citi-navy);">OpenShift Integration</strong>
+                        <ul style="color: var(--citi-gray); margin-top: 5px; padding-left: 16px;">
+                            <li>Runs as operator in <code>kubernaut-system</code> namespace</li>
+                            <li>Native CRDs -- <code>oc get rr,sp,aia,wfe,ea</code></li>
+                            <li>OCP TLS security profiles (Modern/Intermediate)</li>
+                            <li>RBAC-aware: respects cluster roles and SCCs</li>
+                            <li>Multi-cluster fleet federation (ACM/EAIGW)</li>
+                        </ul>
+                    </div>
+                    <div style="text-align: left;">
+                        <strong style="color: var(--citi-navy);">Deployment</strong>
+                        <ul style="color: var(--citi-gray); margin-top: 5px; padding-left: 16px;">
+                            <li>Single Helm chart install (10 minutes)</li>
+                            <li>12 microservices, independently scalable</li>
+                            <li>Air-gap ready (OCI bundles for disconnected)</li>
+                            <li>LLM: OpenAI, Anthropic, or local (Ollama)</li>
+                            <li>PostgreSQL + optional Redis/Valkey</li>
+                        </ul>
+                    </div>
+                </div>
+              </section>
             </section>
+
 
             <!-- SLIDE 4: Safety, Compliance, Control -->
             <section>

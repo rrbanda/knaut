@@ -28,10 +28,17 @@ This repository contains a presentation deck introducing **Kubernaut** -- an AI-
 
 ## For Presenters
 
+**Start here:** Read the [Presenter Preparation Guide](PRESENTER_GUIDE.md) -- it explains every concept in plain language (15-minute read).
+
+### Quick Start
 1. Open the presentation URL in Chrome or Edge
 2. Press `S` to open the speaker notes view (shows notes + next slide + timer)
 3. Speaker notes include: talking points, transition phrases, anticipated Q&A, and timing cues
 4. Drag the speaker notes window to a second screen or your laptop display
+
+### Resources
+- [PRESENTER_GUIDE.md](PRESENTER_GUIDE.md) -- Background knowledge, architecture explained simply, FAQ answers, day-of checklist
+- Speaker notes (press `S`) -- Exact scripts, timing cues, and confidence boosters per slide
 
 ## Technology
 
