@@ -290,6 +290,52 @@ Three panels showing what operators actually see. Walk through left to right:
 
 ---
 
+## Handling the "Why Not Individual Agents?" Challenge
+
+If someone in the audience is an agentic AI expert (or has read about CrewAI/AutoGen/multi-agent systems), they may ask: **"Why one agent? Modern systems use specialized agents per domain."**
+
+**Your structured response (4 parts):**
+
+1. **"The generalist does investigation. Specialists are in the catalog."** -- The agent figures out WHAT'S WRONG (generic skill). The HOW TO FIX is in the workflow catalog -- curated, pre-tested remediation recipes that ARE domain-specific. It's like having a diagnostician who refers to specialist treatment protocols.
+
+2. **"v1.6 adds pluggable specialist agents."** -- The `AgenticWorkflow` CRD supports three runtime types:
+   - **Oracle Agent Spec (OAS)**: Declarative YAML agent definitions compiled to LangGraph
+   - **Deep Agents**: Multi-hypothesis investigation with sub-agent spawning (for complex novel failures)
+   - **Goose Runtime**: Session-based investigation recipes
+   - Each deployed as an OCI bundle, per-issue-type. THIS IS the multi-agent pattern.
+
+3. **"The Orchestrator decides which agent to use."** -- Based on signal classification (severity, type, environment), the Orchestrator routes to the correct runtime. Simple OOM? Generalist in 10 seconds. Novel cross-service failure? Deep Agent with parallel hypothesis exploration.
+
+4. **"Safety is universal."** -- The shadow agent alignment check works across ALL runtimes. You don't lose safety guarantees when using a specialist agent.
+
+**If pressed further:** "Premature specialization is a complexity tax. One agent to monitor, one set of metrics, one failure domain for 80% of cases. Specialists are opt-in for the complex 20% -- and they're coming in v1.6, validated by three separate spike exercises."
+
+## RHACM Integration -- What to Say (and NOT Say)
+
+**SAY:** "Kubernaut integrates with Red Hat Advanced Cluster Management"
+**DO NOT SAY:** "Kubernaut replaces RHACM" (it doesn't)
+
+**What the integration actually does (from the codebase):**
+
+| Component | How it uses RHACM |
+|-----------|-------------------|
+| `pkg/fleet/acm/` | Queries ACM Search GraphQL API (`/searchapi/graphql`) to check if a resource on a remote cluster is managed by Kubernaut (scope checking) |
+| `pkg/fleet/registry/` | Watches cluster registration CRDs (Kuadrant Gateway or EAIGW Backend CRDs) to discover managed clusters |
+| `pkg/fleet/mcpclient/` | Uses MCP protocol through the gateway to execute tools on remote clusters (remote kubectl, remote metrics) |
+| Fleet Metadata Cache | Kubernaut's own Valkey-backed cache as an alternative to direct ACM Search queries (for performance) |
+
+**Two fleet backends (configurable):**
+- `fleetmetadatacache` -- Kubernaut's own cache (Valkey). Faster, but requires the FMC service.
+- `acm` -- Direct ACM Search GraphQL. No extra service needed if you already have RHACM.
+
+**Two gateway types:**
+- `GatewayEAIGW` -- Envoy AI Gateway (watches `gateway.envoyproxy.io` Backend CRDs)
+- `GatewayKuadrant` -- Kuadrant (watches MCPServerRegistration CRDs)
+
+**The key message:** "RHACM provides the multi-cluster visibility and registry. Kubernaut leverages that to know which clusters it can remediate, and to execute investigation tools across the fleet. They're complementary."
+
+---
+
 ## Presentation Tips
 
 ### Opening (first 60 seconds)
