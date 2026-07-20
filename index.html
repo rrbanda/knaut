@@ -164,10 +164,10 @@
 <section>
 <div class="top-bar"></div>
 <h2>Platform Architecture</h2>
-<h3>CRD-driven orchestration -- services communicate via Kubernetes Custom Resources, not HTTP calls</h3>
+<h3>CRD-driven orchestration -- services communicate via K8s Custom Resources, not HTTP</h3>
 
 <div style="text-align:center; margin: 4px 0;">
-<svg viewBox="0 0 950 295" style="max-width: 890px;">
+<svg viewBox="0 0 870 290" style="max-width: 850px;">
     <defs>
         <marker id="arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><polygon points="0,0 6,2 0,4" fill="#003B70"/></marker>
         <marker id="arr-sky" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><polygon points="0,0 6,2 0,4" fill="#00BDF2"/></marker>
@@ -285,47 +285,42 @@
     <!-- Agent -> DS arrow -->
     <path d="M 440 195 L 448 195" stroke="#94A3B8" stroke-width="0.8" marker-end="url(#arr)"/>
 
-    <!-- ═══ TARGET CLUSTERS (right side, OUTSIDE operator boundary) ═══ -->
-    <!-- Hub cluster -->
-    <rect x="740" y="30" width="120" height="70" rx="6" fill="#F8FAFC" stroke="#94A3B8"/>
-    <text x="800" y="48" text-anchor="middle" font-size="8.5" fill="#003B70" font-weight="700">OpenShift Hub</text>
-    <text x="800" y="61" text-anchor="middle" font-size="6.5" fill="#4A5568">Managed namespaces</text>
-    <text x="800" y="72" text-anchor="middle" font-size="6.5" fill="#4A5568">(kubernaut.ai/managed=true)</text>
-    <text x="800" y="84" text-anchor="middle" font-size="6" fill="#00BDF2">Tekton PipelineRuns execute here</text>
-    <text x="800" y="94" text-anchor="middle" font-size="6" fill="#10B981">EM reads metrics from here</text>
+    <!-- ═══ TARGET CLUSTERS (right side) ═══ -->
+    <rect x="720" y="34" width="108" height="60" rx="5" fill="#F8FAFC" stroke="#94A3B8"/>
+    <text x="774" y="50" text-anchor="middle" font-size="8" fill="#003B70" font-weight="700">OpenShift Hub</text>
+    <text x="774" y="62" text-anchor="middle" font-size="6" fill="#4A5568">Managed namespaces</text>
+    <text x="774" y="73" text-anchor="middle" font-size="6" fill="#4A5568">(kubernaut.ai/managed)</text>
+    <text x="774" y="86" text-anchor="middle" font-size="5.5" fill="#00BDF2">WFE executes here</text>
 
-    <!-- WFE -> Hub: routed ABOVE top row to avoid overlapping boxes -->
-    <path d="M 510 34 L 510 18 L 780 18 L 780 28" stroke="#00BDF2" stroke-width="1.5" fill="none" marker-end="url(#arr-sky)"/>
-    <text x="640" y="14" font-size="6" fill="#00BDF2" font-weight="600">WFE creates PipelineRun / Job on target cluster</text>
+    <!-- WFE -> Hub: short arrow from right of WFE to left of Hub -->
+    <path d="M 547 50 L 718 50" stroke="#00BDF2" stroke-width="1.5" fill="none" marker-end="url(#arr-sky)"/>
 
-    <!-- EM -> Hub: routed just below the WFE arrow -->
-    <path d="M 589 34 L 589 24 L 800 24 L 800 28" stroke="#10B981" stroke-width="1" fill="none" stroke-dasharray="4,2" marker-end="url(#arr-green)"/>
-    <text x="700" y="23" font-size="5" fill="#10B981">EM reads health + Prometheus metrics (read-only)</text>
+    <!-- EM -> Hub: dashed read-only -->
+    <path d="M 626 58 L 660 58 L 660 68 L 718 68" stroke="#10B981" stroke-width="0.8" fill="none" stroke-dasharray="3,2" marker-end="url(#arr-green)"/>
+    <text x="665" y="64" font-size="4.5" fill="#10B981">reads metrics</text>
 
     <!-- Fleet clusters -->
-    <rect x="740" y="110" width="120" height="78" rx="6" fill="#F8FAFC" stroke="#F59E0B" stroke-dasharray="4,2"/>
-    <text x="800" y="127" text-anchor="middle" font-size="8" fill="#92400E" font-weight="600">Fleet Clusters</text>
-    <text x="800" y="141" text-anchor="middle" font-size="6.5" fill="#4A5568">RHACM Search (GraphQL)</text>
-    <text x="800" y="153" text-anchor="middle" font-size="6.5" fill="#4A5568">Envoy AI Gateway (EAIGW)</text>
-    <text x="800" y="165" text-anchor="middle" font-size="6.5" fill="#4A5568">Kuadrant Gateway</text>
-    <text x="800" y="177" text-anchor="middle" font-size="6.5" fill="#4A5568">MCP remote tool calls</text>
+    <rect x="720" y="105" width="108" height="68" rx="5" fill="#F8FAFC" stroke="#F59E0B" stroke-dasharray="3,2"/>
+    <text x="774" y="120" text-anchor="middle" font-size="7.5" fill="#92400E" font-weight="600">Fleet Clusters</text>
+    <text x="774" y="133" text-anchor="middle" font-size="6" fill="#4A5568">RHACM Search (GraphQL)</text>
+    <text x="774" y="144" text-anchor="middle" font-size="6" fill="#4A5568">EAIGW / Kuadrant</text>
+    <text x="774" y="155" text-anchor="middle" font-size="6" fill="#4A5568">MCP remote tools</text>
 
-    <!-- FMC -> Fleet scope queries -->
-    <path d="M 697 130 L 738 135" stroke="#F59E0B" stroke-width="1" fill="none" stroke-dasharray="3,2" marker-end="url(#arr-orange)"/>
-    <text x="705" y="145" font-size="5" fill="#92400E">scope queries</text>
+    <!-- FMC -> Fleet -->
+    <path d="M 697 130 L 718 130" stroke="#F59E0B" stroke-width="0.8" fill="none" stroke-dasharray="3,2" marker-end="url(#arr-orange)"/>
 
-    <!-- Agent fleet tools -> Fleet -->
-    <path d="M 440 165 L 440 170 Q 440 175 445 175 L 720 175 L 738 170" stroke="#F59E0B" stroke-width="0.8" fill="none" stroke-dasharray="3,2" marker-end="url(#arr-orange)"/>
-    <text x="570" y="182" font-size="5" fill="#92400E">Agent fleet MCP tools (remote investigation)</text>
+    <!-- Agent -> Fleet -->
+    <path d="M 440 165 L 440 168 L 700 168 L 718 155" stroke="#F59E0B" stroke-width="0.8" fill="none" stroke-dasharray="3,2" marker-end="url(#arr-orange)"/>
+    <text x="560" y="178" font-size="5" fill="#92400E">fleet MCP tools</text>
 </svg>
 </div>
 
-<div class="two-col" style="font-size: 0.44em; margin-top: 2px;">
+<div class="two-col" style="font-size: 0.42em; margin-top: 2px;">
     <div style="text-align:left;">
-        <strong style="color: var(--navy);">CRD Communication Pattern (NOT HTTP)</strong>: Gateway creates RR CRD | Orchestrator watches RR, creates child CRDs (SP, AIA, WFE, EA, NR) | Each controller reconciles its own CRD independently | Owner refs cascade delete | 10 CRDs on <code>kubernaut.ai/v1alpha1</code>
+        <strong style="color: var(--navy);">CRD Pattern</strong>: GW creates RR | RO creates child CRDs (SP, AIA, WFE, EA, NR) | Each controller reconciles independently | Owner refs cascade | 10 CRDs on <code>kubernaut.ai/v1alpha1</code>
     </div>
     <div style="text-align:left;">
-        <strong style="color: var(--navy);">Deployment</strong>: <code>helm install kubernaut</code> | 12 pods in <code>kubernaut-system</code> | air-gap (OCI bundles + local LLM) | PostgreSQL + Valkey (BYO HA for prod) | RHACM integration via ACM Search GraphQL | EKS/AKS also supported | multi-arch
+        <strong style="color: var(--navy);">Deploy</strong>: <code>helm install kubernaut</code> | 12 pods | air-gap (OCI + local LLM) | PG + Valkey (BYO HA prod) | RHACM via ACM Search | EKS/AKS supported | multi-arch
     </div>
 </div>
 
