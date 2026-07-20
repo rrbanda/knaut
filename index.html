@@ -285,33 +285,26 @@
     <!-- Agent -> DS arrow -->
     <path d="M 440 195 L 448 195" stroke="#94A3B8" stroke-width="0.8" marker-end="url(#arr)"/>
 
-    <!-- ═══ TARGET CLUSTERS (right side) ═══ -->
-    <rect x="720" y="34" width="108" height="60" rx="5" fill="#F8FAFC" stroke="#94A3B8"/>
-    <text x="774" y="50" text-anchor="middle" font-size="8" fill="#003B70" font-weight="700">OpenShift Hub</text>
-    <text x="774" y="62" text-anchor="middle" font-size="6" fill="#4A5568">Managed namespaces</text>
-    <text x="774" y="73" text-anchor="middle" font-size="6" fill="#4A5568">(kubernaut.ai/managed)</text>
-    <text x="774" y="86" text-anchor="middle" font-size="5.5" fill="#00BDF2">WFE executes here</text>
+    <!-- ═══ TARGET CLUSTERS (right side -- clean, no spaghetti arrows) ═══ -->
 
-    <!-- WFE -> Hub: short arrow from right of WFE to left of Hub -->
-    <path d="M 547 50 L 718 50" stroke="#00BDF2" stroke-width="1.5" fill="none" marker-end="url(#arr-sky)"/>
+    <!-- Single bold arrow: operator -> Hub -->
+    <path d="M 710 55 L 725 55" stroke="#00BDF2" stroke-width="2.5" fill="none" marker-end="url(#arr-sky)"/>
 
-    <!-- EM -> Hub: dashed read-only -->
-    <path d="M 626 58 L 660 58 L 660 68 L 718 68" stroke="#10B981" stroke-width="0.8" fill="none" stroke-dasharray="3,2" marker-end="url(#arr-green)"/>
-    <text x="665" y="64" font-size="4.5" fill="#10B981">reads metrics</text>
+    <rect x="730" y="34" width="108" height="62" rx="5" fill="#F8FAFC" stroke="#00BDF2" stroke-width="1.5"/>
+    <text x="784" y="50" text-anchor="middle" font-size="8" fill="#003B70" font-weight="700">OpenShift Hub</text>
+    <text x="784" y="63" text-anchor="middle" font-size="6" fill="#4A5568">Managed namespaces</text>
+    <text x="784" y="74" text-anchor="middle" font-size="6" fill="#00BDF2" font-weight="600">WFE: creates PipelineRuns</text>
+    <text x="784" y="85" text-anchor="middle" font-size="6" fill="#10B981" font-weight="600">EM: reads health + metrics</text>
 
-    <!-- Fleet clusters -->
-    <rect x="720" y="105" width="108" height="68" rx="5" fill="#F8FAFC" stroke="#F59E0B" stroke-dasharray="3,2"/>
-    <text x="774" y="120" text-anchor="middle" font-size="7.5" fill="#92400E" font-weight="600">Fleet Clusters</text>
-    <text x="774" y="133" text-anchor="middle" font-size="6" fill="#4A5568">RHACM Search (GraphQL)</text>
-    <text x="774" y="144" text-anchor="middle" font-size="6" fill="#4A5568">EAIGW / Kuadrant</text>
-    <text x="774" y="155" text-anchor="middle" font-size="6" fill="#4A5568">MCP remote tools</text>
+    <!-- Single bold arrow: operator -> Fleet -->
+    <path d="M 710 140 L 725 140" stroke="#F59E0B" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr-orange)"/>
 
-    <!-- FMC -> Fleet -->
-    <path d="M 697 130 L 718 130" stroke="#F59E0B" stroke-width="0.8" fill="none" stroke-dasharray="3,2" marker-end="url(#arr-orange)"/>
-
-    <!-- Agent -> Fleet -->
-    <path d="M 440 165 L 440 168 L 700 168 L 718 155" stroke="#F59E0B" stroke-width="0.8" fill="none" stroke-dasharray="3,2" marker-end="url(#arr-orange)"/>
-    <text x="560" y="178" font-size="5" fill="#92400E">fleet MCP tools</text>
+    <rect x="730" y="108" width="108" height="72" rx="5" fill="#F8FAFC" stroke="#F59E0B" stroke-width="1.2" stroke-dasharray="4,2"/>
+    <text x="784" y="123" text-anchor="middle" font-size="7.5" fill="#92400E" font-weight="600">Fleet Clusters</text>
+    <text x="784" y="136" text-anchor="middle" font-size="6" fill="#4A5568">RHACM Search (GraphQL)</text>
+    <text x="784" y="147" text-anchor="middle" font-size="6" fill="#4A5568">EAIGW / Kuadrant</text>
+    <text x="784" y="160" text-anchor="middle" font-size="6" fill="#F59E0B" font-weight="600">Agent: MCP remote tools</text>
+    <text x="784" y="171" text-anchor="middle" font-size="6" fill="#F59E0B" font-weight="600">FMC: scope resolution</text>
 </svg>
 </div>
 
