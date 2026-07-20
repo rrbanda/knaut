@@ -755,7 +755,131 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
 </aside>
 </section>
 
-<!-- ═══════════════ SLIDE 8 (APPENDIX): EXPERT CHALLENGE ═══════════════ -->
+<!-- ═══════════════ SLIDE 8: USE CASE TABLE ═══════════════ -->
+<section>
+<div class="top-bar"></div>
+<h2>Use Cases: What Kubernaut Remediates</h2>
+<h3>Automation level determined by AI confidence + operator policy (not hardcoded per issue type)</h3>
+
+<div style="font-size: 0.44em; margin-top: 6px;">
+<table style="width: 100%; border-collapse: collapse; text-align: left;">
+<thead>
+<tr style="background: var(--navy); color: white;">
+<th style="padding: 5px 8px; font-size: 1.05em;">Alert / Scenario</th>
+<th style="padding: 5px 8px; font-size: 1.05em;">Action Type</th>
+<th style="padding: 5px 8px; font-size: 1.05em;">Execution Engine</th>
+<th style="padding: 5px 8px; font-size: 1.05em;">Typical Path</th>
+<th style="padding: 5px 8px; font-size: 1.05em;">Human Involvement</th>
+</tr>
+</thead>
+<tbody>
+<tr style="background: #F0FDF4;">
+<td style="padding: 4px 8px;"><strong>OOMKilled</strong></td>
+<td style="padding: 4px 8px;"><code>IncreaseMemoryLimits</code></td>
+<td style="padding: 4px 8px;">Tekton</td>
+<td style="padding: 4px 8px; color: var(--green); font-weight: 600;">Auto (high confidence)</td>
+<td style="padding: 4px 8px;">None if confidence &gt;80%</td>
+</tr>
+<tr>
+<td style="padding: 4px 8px;"><strong>CrashLoopBackOff (config)</strong></td>
+<td style="padding: 4px 8px;"><code>RestartDeployment</code></td>
+<td style="padding: 4px 8px;">Tekton</td>
+<td style="padding: 4px 8px; color: var(--green); font-weight: 600;">Auto (high confidence)</td>
+<td style="padding: 4px 8px;">None if confidence &gt;80%</td>
+</tr>
+<tr style="background: #F0FDF4;">
+<td style="padding: 4px 8px;"><strong>OOM + horizontal scale viable</strong></td>
+<td style="padding: 4px 8px;"><code>ScaleReplicas</code></td>
+<td style="padding: 4px 8px;">Tekton</td>
+<td style="padding: 4px 8px; color: var(--green); font-weight: 600;">Auto (high confidence)</td>
+<td style="padding: 4px 8px;">None if confidence &gt;80%</td>
+</tr>
+<tr>
+<td style="padding: 4px 8px;"><strong>ImagePullBackOff (creds)</strong></td>
+<td style="padding: 4px 8px;"><code>RollbackDeployment</code></td>
+<td style="padding: 4px 8px;">Tekton</td>
+<td style="padding: 4px 8px; color: var(--orange); font-weight: 600;">Approval (production)</td>
+<td style="padding: 4px 8px;">Console UI or <code>oc patch rar</code></td>
+</tr>
+<tr style="background: #FFFBEB;">
+<td style="padding: 4px 8px;"><strong>Bad deployment (regression)</strong></td>
+<td style="padding: 4px 8px;"><code>RollbackDeployment</code></td>
+<td style="padding: 4px 8px;">Tekton</td>
+<td style="padding: 4px 8px; color: var(--orange); font-weight: 600;">Approval (production)</td>
+<td style="padding: 4px 8px;">Console UI or <code>oc patch rar</code></td>
+</tr>
+<tr>
+<td style="padding: 4px 8px;"><strong>Node NotReady</strong></td>
+<td style="padding: 4px 8px;"><code>DrainNode</code></td>
+<td style="padding: 4px 8px;">Tekton</td>
+<td style="padding: 4px 8px; color: var(--orange); font-weight: 600;">Approval (P0 critical)</td>
+<td style="padding: 4px 8px;">Console UI or <code>oc patch rar</code></td>
+</tr>
+<tr style="background: #FFFBEB;">
+<td style="padding: 4px 8px;"><strong>cert-manager CA missing</strong></td>
+<td style="padding: 4px 8px;"><code>FixCertificate</code></td>
+<td style="padding: 4px 8px;">Tekton</td>
+<td style="padding: 4px 8px; color: var(--orange); font-weight: 600;">Approval (production)</td>
+<td style="padding: 4px 8px;">Console UI or <code>oc patch rar</code></td>
+</tr>
+<tr>
+<td style="padding: 4px 8px;"><strong>Istio AuthorizationPolicy deny</strong></td>
+<td style="padding: 4px 8px;"><code>FixAuthorizationPolicy</code></td>
+<td style="padding: 4px 8px;">Tekton</td>
+<td style="padding: 4px 8px; color: var(--orange); font-weight: 600;">Approval (security)</td>
+<td style="padding: 4px 8px;">Console UI or <code>oc patch rar</code></td>
+</tr>
+<tr style="background: #FEF2F2;">
+<td style="padding: 4px 8px;"><strong>Generic pod issues</strong></td>
+<td style="padding: 4px 8px;"><code>RestartPod</code></td>
+<td style="padding: 4px 8px;">Tekton / Job</td>
+<td style="padding: 4px 8px; color: var(--green); font-weight: 600;">Auto (low risk)</td>
+<td style="padding: 4px 8px;">None (restart is safe)</td>
+</tr>
+<tr>
+<td style="padding: 4px 8px;"><strong>Novel / unknown failure</strong></td>
+<td style="padding: 4px 8px;"><em>No matching workflow</em></td>
+<td style="padding: 4px 8px;">—</td>
+<td style="padding: 4px 8px; color: var(--red); font-weight: 600;">Investigate only</td>
+<td style="padding: 4px 8px;">Full RCA report delivered; human decides</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div style="font-size: 0.44em; margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+    <div style="background: var(--light); padding: 6px 10px; border-radius: 4px;">
+        <strong style="color: var(--navy);">How automation level is determined</strong><br>
+        AI confidence score (from investigation) + Rego policy (per namespace/env) = approval decision. Threshold is configurable per namespace. Default: &gt;80% = auto-execute, &lt;80% = require approval. Operators control the policy, not Kubernaut.
+    </div>
+    <div style="background: var(--light); padding: 6px 10px; border-radius: 4px;">
+        <strong style="color: var(--navy);">Workflow catalog is curated + versioned</strong><br>
+        Each <code>RemediationWorkflow</code> CRD defines: what it does, when to use it, when NOT to use it, preconditions, target resource types, severity/environment labels. Stored as OCI bundles. Git-versioned. Your team authors them.
+    </div>
+</div>
+
+<aside class="notes">
+<h3>SPEAKER NOTES -- Slide 8 (Use Cases)</h3>
+<p><strong>Opening:</strong> "Let me make this concrete -- here's what Kubernaut actually handles today, based on the real workflow catalog."</p>
+
+<p><strong>Walk the table top to bottom:</strong></p>
+<ul>
+<li>"Green rows: high-confidence, known patterns. OOMKilled? The agent identifies memory pressure, selects IncreaseMemoryLimits. If confidence is above your threshold -- say 80% -- it auto-executes. No human needed."</li>
+<li>"Orange rows: things where you probably want a human to approve before execution. Rollbacks, node drains, cert fixes, security policy changes. The AI still does the investigation and selects the workflow, but it stops and asks before executing."</li>
+<li>"Red row: novel failures. No matching workflow in the catalog. The AI produces a full RCA report -- root cause, contributing factors, evidence -- and hands it to a human. Even when it can't fix the problem, it saves you the investigation time."</li>
+</ul>
+
+<p><strong>Key point about automation levels:</strong> "These aren't hardcoded. The auto vs approval decision is made by your Rego policy based on the AI's confidence score. You might set 90% for production, 70% for staging. You might require approval for ALL node operations regardless of confidence. The policy is yours to define."</p>
+
+<p><strong>On the workflow catalog:</strong> "These are real RemediationWorkflow CRDs from the catalog. Each one has structured metadata: what it does, when to use it, when NOT to use it, what preconditions must hold. The AI uses this metadata to make its selection. Your engineers author these -- think of them as executable runbooks stored in Git."</p>
+
+<p><strong>If asked 'can we add our own?':</strong> "Absolutely. The catalog is a set of CRDs. Write a YAML spec, write the Tekton pipeline (or Job script, or Ansible playbook), build an OCI bundle, register it. The AI will discover it automatically for matching alerts."</p>
+
+<p><strong>Timing:</strong> 3-4 minutes. Let the table speak for itself -- just highlight the three color bands.</p>
+</aside>
+</section>
+
+<!-- ═══════════════ SLIDE 9 (APPENDIX): EXPERT CHALLENGE ═══════════════ -->
 <section>
 <div class="top-bar"></div>
 <h2>Appendix: Why Not Individual Agents Per Issue?</h2>
