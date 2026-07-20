@@ -138,15 +138,15 @@
     <rect x="440" y="24" width="80" height="14" rx="3" fill="#F87171"/>
     <text x="448" y="34" font-size="7" fill="white">Fix: 9 min</text>
     <text x="530" y="34" font-size="8" fill="#EF4444" font-weight="700">47 min total</text>
-    <!-- After -->
+    <!-- After (real data: 13 v1.5 runs, median values) -->
     <text x="5" y="50" font-size="8" fill="#4A5568">With Kubernaut:</text>
-    <rect x="120" y="42" width="60" height="14" rx="3" fill="#10B981" opacity="0.7"/>
-    <text x="125" y="52" font-size="7" fill="white">AI: 15s</text>
-    <rect x="180" y="42" width="80" height="14" rx="3" fill="#059669"/>
-    <text x="188" y="52" font-size="7" fill="white">Execute: 90s</text>
-    <rect x="260" y="42" width="50" height="14" rx="3" fill="#047857"/>
-    <text x="265" y="52" font-size="7" fill="white">Verify: 30s</text>
-    <text x="320" y="52" font-size="8" fill="#10B981" font-weight="700">~2.5 min total (95% reduction)</text>
+    <rect x="120" y="42" width="120" height="14" rx="3" fill="#10B981" opacity="0.7"/>
+    <text x="125" y="52" font-size="7" fill="white">AI RCA: ~3min</text>
+    <rect x="240" y="42" width="40" height="14" rx="3" fill="#059669"/>
+    <text x="245" y="52" font-size="7" fill="white">Exec: ~1min</text>
+    <rect x="280" y="42" width="80" height="14" rx="3" fill="#047857"/>
+    <text x="285" y="52" font-size="7" fill="white">Verify: ~5min</text>
+    <text x="370" y="52" font-size="8" fill="#10B981" font-weight="700">~9 min typical (~80% reduction)</text>
 </svg>
 </div>
 
@@ -154,7 +154,7 @@
 <h3>SPEAKER NOTES -- Slide 1 (0:30 - 4:30)</h3>
 <p><strong>Opening:</strong> "Quick show of hands -- how many of you have been paged at 3am for something that turned out to be a known issue? [pause] That's the 70% right there."</p>
 <p><strong>Stats:</strong> "500 alerts per SRE per week. 70% repetitive. And the killer: 80% of MTTR is investigation -- reading logs, checking dashboards, correlating events. The actual fix takes 30 seconds."</p>
-<p><strong>MTTR bar:</strong> "Look at this comparison. Today: 38 minutes investigating, 9 minutes fixing. With Kubernaut: the agent investigates in 15 seconds, executes in 90, and verifies in 30. That's 47 minutes down to 2.5."</p>
+<p><strong>MTTR bar:</strong> "Look at this comparison. Today: 38 minutes investigating, 9 minutes fixing. With Kubernaut: the agent investigates in about 3 minutes, executes in 1, and verifies in 5. That's 47 minutes down to about 9 -- an 80% reduction. These are median numbers from 13 real remediation runs on v1.5."</p>
 <p><strong>Transition:</strong> "What if we could take that best SRE's methodology and run it as an autonomous agent, 24/7, with full audit trail? That's Kubernaut."</p>
 <p><strong>Timing:</strong> 4 minutes. The MTTR bar is the visual anchor -- point to it.</p>
 </aside>
@@ -252,9 +252,9 @@
     <text x="155" y="222" font-size="7" fill="#003B70" font-weight="600">Pre-enrichment + MCP Interactive (human takeover)</text>
     <text x="160" y="233" font-size="6.5" fill="#4A5568">Multi-LLM: OpenAI, Anthropic, Gemini, Ollama (air-gap)</text>
 
-    <text x="155" y="248" font-size="7" fill="#003B70" font-weight="600">v1.6: AgenticWorkflow CRD (OAS / Deep Agents / Goose)</text>
-    <text x="160" y="259" font-size="6.5" fill="#4A5568">Pluggable specialist agents per issue type</text>
-    <text x="160" y="269" font-size="6.5" fill="#4A5568">Orchestrator routes to correct runtime by signal type</text>
+    <text x="155" y="248" font-size="7" fill="#003B70" font-weight="600">v1.7: Custom Investigation Agents (AgenticWorkflow CRD)</text>
+    <text x="160" y="259" font-size="6.5" fill="#4A5568">Operators plug custom SOPs into investigations via opaque OCI agents</text>
+    <text x="160" y="269" font-size="6.5" fill="#4A5568">AuthBridge + OpenShell for secure execution of untrusted images</text>
 
     <!-- AI Analysis -> Agent HTTP (correct flow) -->
     <path d="M 430 78 L 430 95 L 340 95 L 340 110" stroke="#00BDF2" stroke-width="1.3" fill="none" marker-end="url(#arr-sky)"/>
@@ -325,7 +325,7 @@
         <strong style="color: var(--navy);">CRD Communication Pattern (NOT HTTP)</strong>: Gateway creates RR CRD | Orchestrator watches RR, creates child CRDs (SP, AIA, WFE, EA, NR) | Each controller reconciles its own CRD independently | Owner refs cascade delete | 10 CRDs on <code>kubernaut.ai/v1alpha1</code>
     </div>
     <div style="text-align:left;">
-        <strong style="color: var(--navy);">Deployment</strong>: <code>helm install kubernaut</code> | 12 pods in <code>kubernaut-system</code> | air-gap (OCI bundles + local LLM) | PostgreSQL + Valkey | RHACM integration via ACM Search GraphQL | multi-arch (amd64/arm64)
+        <strong style="color: var(--navy);">Deployment</strong>: <code>helm install kubernaut</code> | 12 pods in <code>kubernaut-system</code> | air-gap (OCI bundles + local LLM) | PostgreSQL + Valkey (BYO HA for prod) | RHACM integration via ACM Search GraphQL | EKS/AKS also supported | multi-arch
     </div>
 </div>
 
@@ -563,7 +563,7 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
 <div class="safety-grid">
     <div class="safety-card">
         <h4>1. Approval Gates</h4>
-        <p>Confidence &lt;80%: mandatory operator approval via Slack/console. RAR CRD tracks who approved, when, why. Configurable per namespace and action type.</p>
+        <p>Confidence &lt;80%: mandatory operator approval via RAR CRD patch or Console UI. RAR CRD tracks who approved, when, why. Configurable per namespace and action type.</p>
     </div>
     <div class="safety-card">
         <h4>2. Immutable Audit Trail</h4>
@@ -615,22 +615,20 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
 <h3>Real-world operator experience -- from alert to verified resolution</h3>
 
 <div class="three-col" style="margin-top: 8px;">
-    <!-- Slack mockup -->
+    <!-- Console/CLI approval -->
     <div>
-        <div style="font-size: 0.46em; color: var(--navy); font-weight: 700; margin-bottom: 4px;">Slack Notification (approval request)</div>
+        <div style="font-size: 0.46em; color: var(--navy); font-weight: 700; margin-bottom: 4px;">Approval (via Console UI or CLI)</div>
         <div class="mock-slack">
-            <span class="bot-name">Kubernaut</span> <span style="font-size: 0.8em; color: #94A3B8;">APP  10:42 AM</span>
-            <div class="msg" style="margin-top: 6px; border-left: 3px solid var(--sky); padding-left: 8px;">
-                <strong>Remediation Proposal</strong><br>
-                Alert: <code>OOMKilled</code> on <strong>payment-api</strong> (production)<br>
-                Root Cause: Memory leak in revision 5 (deployed 30m ago)<br>
-                Proposed Action: <strong>Rollback to revision 4</strong><br>
+            <span class="bot-name" style="font-size: 0.9em;">Slack Notification (read-only)</span>
+            <div class="msg" style="margin-top: 4px; border-left: 3px solid var(--sky); padding-left: 8px; font-size: 0.9em;">
+                Approval needed: <strong>Rollback payment-api</strong> (production)<br>
+                Root Cause: Memory leak in rev 5<br>
                 Confidence: <strong style="color: var(--green);">92%</strong><br>
-                <div style="margin-top: 6px;">
-                    <span class="btn btn-approve">Approve</span>
-                    <span class="btn btn-reject">Reject</span>
-                    <span class="btn btn-reject">Details</span>
-                </div>
+                <em style="color: #94A3B8;">Approve via Console or CLI</em>
+            </div>
+            <div style="margin-top: 6px; font-family: monospace; font-size: 0.8em; background: #1E293B; color: #E2E8F0; padding: 5px 8px; border-radius: 3px;">
+                oc patch rar rar-a1b2..8k2m \<br>
+                &nbsp;&nbsp;-p '{"status":{"decision":"Approved"}}'
             </div>
         </div>
     </div>
@@ -640,13 +638,13 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
         <div style="font-size: 0.46em; color: var(--navy); font-weight: 700; margin-bottom: 4px;">Terminal: oc get rr --watch</div>
         <div class="mock-terminal">
 <span style="color:#94A3B8;">$ oc get rr -w -n kubernaut-system</span>
-<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  Pending      -         10s
-<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  Processing   -         12s
-<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  Analyzing    -         14s
-<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  AwaitAppr    -         26s
-<span style="color:#6EE7B7;">rr-a1b2..8k2m</span>  Executing    -         31s
-<span style="color:#6EE7B7;">rr-a1b2..8k2m</span>  Verifying    -         55s
-<span style="color:#34D399;">rr-a1b2..8k2m</span>  <span style="color:#34D399;">Completed</span>  Remediated  62s
+<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  Pending      -         5s
+<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  Processing   -         18s
+<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  Analyzing    -         2m46s
+<span style="color:#FCD34D;">rr-a1b2..8k2m</span>  AwaitAppr    -         3m03s
+<span style="color:#6EE7B7;">rr-a1b2..8k2m</span>  Executing    -         3m34s
+<span style="color:#6EE7B7;">rr-a1b2..8k2m</span>  Verifying    -         3m55s
+<span style="color:#34D399;">rr-a1b2..8k2m</span>  <span style="color:#34D399;">Completed</span>  Remediated  8m44s
         </div>
     </div>
 
@@ -677,7 +675,7 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
 </div>
 
 <div style="font-size: 0.46em; color: var(--gray); text-align: center; margin-top: 8px;">
-    <strong style="color: var(--navy);">Total time: 62 seconds</strong> from alert to verified resolution | Operator involvement: one Slack button click | Full audit trail auto-generated
+    <strong style="color: var(--navy);">Total time: ~8m45s</strong> (real v1.5 crashloop scenario) | Operator involvement: one CLI/Console approval | Full audit trail auto-generated | <em>vs. 47 min manual = ~80% faster</em>
 </div>
 
 <aside class="notes">
@@ -703,7 +701,7 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
 <h3>Measurable outcomes + low-risk pilot proposal</h3>
 
 <div class="impact-row">
-    <div class="impact-card"><span class="val">95%</span><span class="desc">MTTR Reduction<br>(47 min -> ~2.5 min)</span></div>
+    <div class="impact-card"><span class="val">~80%</span><span class="desc">MTTR Reduction<br>(47 min -> ~9 min typical)</span></div>
     <div class="impact-card"><span class="val">95%+</span><span class="desc">Execution Success<br>(schema-validated workflows)</span></div>
     <div class="impact-card"><span class="val">99.9%</span><span class="desc">Audit Coverage<br>(zero manual docs)</span></div>
     <div class="impact-card"><span class="val">70%</span><span class="desc">Page Reduction<br>(repetitive auto-handled)</span></div>
@@ -739,13 +737,13 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
 <h3>SPEAKER NOTES -- Slide 7 (25:30 - 28:00)</h3>
 <p><strong>Opening:</strong> "Numbers on the business case, then a concrete path forward."</p>
 <ul>
-<li>"95% MTTR reduction -- 47 minutes to 2.5 minutes. Most of that is investigation time eliminated."</li>
+<li>"~80% MTTR reduction -- 47 minutes down to about 9 minutes typical. Based on 13 real remediation runs on v1.5. The agent investigates in ~3 min, executes in ~1 min, verifies in ~5 min."</li>
 <li>"95%+ execution success -- pre-validated workflows, not ad-hoc commands at 3am."</li>
 <li>"99.9% audit coverage -- zero manual change tickets. Every action auto-documented."</li>
 <li>"70% fewer pages -- the repetitive alerts handled automatically."</li>
 </ul>
 <p><strong>The ask:</strong> "2-3 non-prod namespaces. Top 5 alert patterns. 30 days in observation + approval mode. Then we look at the data together and decide."</p>
-<p><strong>Closing:</strong> "Kubernaut doesn't ask for trust. It asks for a test. The upside: 95% faster resolution. The downside: a controlled 30-day pilot in non-prod. I'd love to hear your thoughts."</p>
+<p><strong>Closing:</strong> "Kubernaut doesn't ask for trust. It asks for a test. The upside: ~80% faster resolution -- real, measured, defensible. The downside: a controlled 30-day pilot in non-prod. I'd love to hear your thoughts."</p>
 <p><strong>Q&A (leave 2 min):</strong></p>
 <ul>
 <li><strong>"AI wrong?"</strong> -- Approval gates. Worst case: proposes wrong thing, human says no.</li>
@@ -770,31 +768,32 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
             <li>Single agent with broad tool access</li>
             <li>RCA is GENERIC (what's wrong?)</li>
             <li>SPECIALIST knowledge lives in the <strong>workflow catalog</strong> (curated, versioned, schema-validated remediation recipes)</li>
-            <li>Fast: 10-30s for common issues</li>
+            <li>Typical investigation: ~3 min (median from real runs)</li>
             <li>Simple ops: one agent to monitor, one set of metrics</li>
             <li>Shadow agent alignment works universally</li>
         </ul>
     </div>
     <div style="text-align:left; border: 1px solid #E2E8F0; border-top: 3px solid var(--sky); padding: 10px; border-radius: 4px;">
-        <strong style="color: var(--sky); font-size: 1.1em;">v1.6: Specialist Agents (AgenticWorkflow CRD)</strong>
+        <strong style="color: var(--sky); font-size: 1.1em;">v1.7: Custom Investigation Agents</strong>
         <ul style="margin: 5px 0; padding-left: 14px; line-height: 1.7;">
-            <li><strong>Oracle Agent Spec (OAS)</strong>: Declarative YAML agent definitions compiled to LangGraph</li>
-            <li><strong>Deep Agents</strong>: Multi-hypothesis investigation with sub-agent spawning</li>
-            <li><strong>Goose Runtime</strong>: Session-based investigation recipes</li>
-            <li>Per-issue-type OCI bundles (e.g., OOM specialist, network specialist)</li>
-            <li>Orchestrator routes to correct runtime based on signal type/severity</li>
-            <li>ACP enforcement layer provides consistent tool access control</li>
+            <li><strong>AgenticWorkflow CRD</strong>: Operators plug custom SOPs into specific investigation points</li>
+            <li>Customer-authored agent as <strong>opaque OCI image</strong> (bring your own entrypoint)</li>
+            <li>Answers domain questions base agent can't: "is this within budget?", "known condition for this service?"</li>
+            <li>Agent's answer injected into investigation context (user-provided RAG step)</li>
+            <li>KA acts as supervised harness, NOT a runtime -- agent runs its own way</li>
+            <li><strong>AuthBridge</strong>: intercepts all outbound LLM/MCP calls for credential injection + audit relay</li>
+            <li><strong>OpenShell</strong>: sandbox isolation sidecar in same pod</li>
         </ul>
     </div>
     <div style="text-align:left; border: 1px solid #E2E8F0; border-top: 3px solid var(--green); padding: 10px; border-radius: 4px;">
         <strong style="color: var(--green); font-size: 1.1em;">Why Both? (Architecture Decision)</strong>
         <ul style="margin: 5px 0; padding-left: 14px; line-height: 1.7;">
-            <li><strong>80% of alerts</strong>: Generalist handles in 10s (known patterns)</li>
-            <li><strong>20% complex cases</strong>: Deep Agent explores hypotheses, spawns sub-agents</li>
-            <li>Orchestrator decides which runtime based on signal classification</li>
-            <li>Shadow agent alignment works across ALL runtimes</li>
-            <li>NOT "one agent forever" -- it's a <strong>pluggable runtime system</strong></li>
-            <li>Workflow catalog = fast path; AgenticWorkflow = deep investigation path</li>
+            <li><strong>80% of alerts</strong>: Generalist handles via workflow catalog (known patterns, fast)</li>
+            <li><strong>20% domain-specific</strong>: Custom agent provides team's SOP knowledge at investigation time</li>
+            <li>Not "runtime routing" -- it's SOP injection at a specific point</li>
+            <li>Shadow agent alignment + AuthBridge work across ALL agents</li>
+            <li>NOT "one agent forever" -- operators extend with their own domain expertise</li>
+            <li>EKS/AKS also supported: chart is cloud-portable (no OCP-specific deps)</li>
         </ul>
     </div>
 </div>
@@ -809,10 +808,10 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
     </div>
     <div style="background: var(--light); padding: 8px 12px; border-radius: 4px;">
         <strong style="color: var(--navy);">Multi-Agent Objection Response</strong><br>
-        "Per-issue specialists are the roadmap (AgenticWorkflow CRD, v1.6).<br>
+        "Custom agents are the v1.7 roadmap (AgenticWorkflow CRD).<br>
         Today's generalist is intentionally simple -- specialization is in the catalog.<br>
-        For novel/complex cases, Deep Agents already support multi-hypothesis + sub-agents.<br>
-        The architecture is NOT monolithic -- it's a pluggable runtime system."
+        v1.7 adds SOP injection: plug your team's domain knowledge into investigations.<br>
+        AuthBridge + OpenShell make running opaque untrusted agent images safe."
     </div>
 </div>
 
@@ -825,14 +824,14 @@ rr-b3c4d5e6f7a8-9g0h   Blocked                  DiskPressure       Node/worker-3
 <p><strong>Your response (memorize this structure):</strong></p>
 <ol>
 <li>"Great question. First, the current agent is intentionally a generalist INVESTIGATOR -- its job is to figure out WHAT'S WRONG. The specialist knowledge is in the workflow catalog -- curated, tested, schema-validated remediation recipes. So we already have specialization, just in the execution layer."</li>
-<li>"Second, v1.6 introduces the AgenticWorkflow CRD -- this IS the multi-agent pattern. You can deploy per-issue-type specialist agents as OCI bundles. We have three runtime types validated: Oracle Agent Spec (declarative), LangChain Deep Agents (multi-hypothesis with sub-agent spawning), and Goose (session recipes)."</li>
-<li>"Third, the Orchestrator decides which runtime to use based on signal classification. Simple OOM? Generalist handles it in 10 seconds. Complex cross-service failure with no known pattern? Deep Agent explores multiple hypotheses with sub-agents."</li>
-<li>"And critically -- the shadow agent alignment check works ACROSS all runtimes. Safety doesn't depend on which agent is investigating."</li>
+<li>"Second, v1.7 introduces the AgenticWorkflow CRD. Operators can plug their own custom agents -- packaged as opaque OCI images -- into specific points of an investigation. It's like giving the AI access to your team's runbooks on demand. The agent answers a domain question ('is this within budget?', 'have we seen this before on this service?') and that answer gets injected into the investigation context."</li>
+<li>"Third, security for these custom agents is handled by AuthBridge (intercepts all outbound calls for credential injection and audit) and OpenShell (sandbox isolation). The opaque agent never sees real credentials and can't escape its boundary."</li>
+<li>"And critically -- the shadow agent alignment check works universally. Safety doesn't depend on which agent is running."</li>
 </ol>
 
 <p><strong>On RHACM:</strong> "Kubernaut integrates with RHACM -- it doesn't replace it. We use ACM Search's GraphQL API for scope checking across managed clusters. The fleet tools use MCP to interact with remote clusters through your existing gateway (Kuadrant or Envoy AI Gateway). It's complementary, not competitive."</p>
 
-<p><strong>If pressed on "why not specialists today?":</strong> "Operational simplicity. One agent to monitor, one set of metrics, one failure domain. The generalist handles 80% of cases perfectly. We add specialist runtimes for the complex 20% -- but only when you need them, not by default. Premature specialization is a complexity tax."</p>
+<p><strong>If pressed on "why not specialists today?":</strong> "Operational simplicity. One agent to monitor, one set of metrics, one failure domain. The generalist handles 80% of cases via the workflow catalog. v1.7 adds custom SOP injection for domain-specific knowledge -- operators plug in their own agents as opaque OCI images, protected by AuthBridge/OpenShell. Premature specialization is a complexity tax."</p>
 </aside>
 </section>
 
